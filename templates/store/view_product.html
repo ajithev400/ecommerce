@@ -1,0 +1,66 @@
+{% extends 'admin/admin.html' %}
+{% load static %}
+
+{% block title %}
+    View Product
+{% endblock title %}
+
+
+{% block content %}
+<div class="card-group">    
+<div class="col-md-4 mt-4 ms-2">
+    <div class="card card-blog card-plain">
+      <div class="position-relative">
+        <a class="d-block blur-shadow-image">
+          <img src="{{item.image.url}}" alt="img-blur-shadow" class="img-fluid shadow border-radius-lg">
+        </a>
+      </div>
+      <div class="card-body px-1 pt-3">
+        <!-- <p class="text-gradient text-primary mb-2 text-sm">Entire Apartment • 2 Guests • </p> -->
+        <a href="javascript:;">
+          <h5>
+            {{item}}
+          </h5>
+          <h6>Margin Price: {{variant.margin_price}}</h6>
+          <h6>Price: {{variant.price}}</h6>
+        </a>
+        <p>
+          {{item.description}}
+        </p>
+        <button type="button" class="btn btn-outline-primary btn-sm">Edit</button> <a href="{% url 'add_variant' item.id %}" class="btn btn-outline-primary btn-sm">Add New Variant</a>
+      </div>
+    </div>
+  </div>    
+</div>
+<div class="card-group">
+    {% for variant in variants %}
+      <div class="col-md-4 mt-4 ms-2">
+        <div class="card card-blog card-plain">
+          <div class="position-relative">
+            <a class="d-block blur-shadow-image">
+              <img src="{{variant.image1.url}}" alt="{{variant}}" class="img-fluid shadow border-radius-lg">
+            </a>
+          </div>
+          <div class="card-body px-1 pt-3">
+            <!-- <p class="text-gradient text-primary mb-2 text-sm">Entire Apartment • 2 Guests • </p> -->
+            <a >
+              <h5>
+                {{variant}}
+              </h5>
+              <h6>Stock: {{variant.stock}}</h6>
+              <h6>color: {{variant.color}}</h6>
+              <h6>Margin Price: {{variant.margin_price}}</h6>
+              <h6>Price: {{variant.price}}</h6>
+            </a>
+            <p></p>
+            <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+</div>
+      
+  
+
+{% endblock content %}
+    

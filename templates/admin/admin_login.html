@@ -1,0 +1,57 @@
+
+
+{% load static %}
+
+<title>Admin Dashboard</title>
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'style/admin_login.css' %}">
+
+<div class="container">
+        <div class="header">
+                <h4>Admin login</h4>
+                
+        </div>
+
+        <form method="POST">
+                {% csrf_token %}
+                <div class="input">
+                        <div class="label">
+                                <i class="fa fa-sign-in"></i>
+                                <p>Email</p>
+                        </div class="label">
+                        <input type="email" name="email">
+                </div>
+                <div class="input">
+                        <div class="label">
+                                <i class="fa fa-unlock-alt"></i>
+                                <p>Password</p>
+                        </div class="label">
+                        <input type="password" name="password">
+                </div>
+                <button class="btn"type="submit">Login</button>
+                
+                {% if messages %}
+                        
+                        {% for message in messages %}
+                        <div class="header">
+                                <h4 style="color: rgb(225, 28, 28);">{{message}}</h4>
+                        </div>
+                        {% endfor %}
+                                
+                {% endif %}
+                        
+        </form>
+
+        <div class="footer">
+                <p>forget your password?</p>
+                <p>not signed up</p>
+        </div>
+        <div class="over"></div>
+        <div class="overlayer">
+                <p>Welcome!</p>
+                <i class="fa fa-close"></i>
+        </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section
+    class="bg-image"
+    style="background-image:
+    url('https://images.unsplash.com/photo-1629723095068-d1d3f04cc1fe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 135vh;">
+    <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+        <div class="container h-100">
+            <div
+                class="row d-flex justify-content-center align-items-center
+                h-100">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                    <div class="card" style="border-radius: 15px">
+                        <div class="card-body p-5">
+                            <h2 class="text-uppercase text-center mb-5">
+                                OTP
+                            </h2>
+                            
+                            {% if messages %}
+                            
+                            {% for message in messages %}
+                            <div class="form-outline mb-4">
+                                <label class="form-label text-danger">{{message}}</label>    
+                            </div>
+                                
+                            {% endfor %}      
+                            {% endif %}
+                                
+                            <form method="post" action="">
+                                {% csrf_token %}
+                                <div class="form-outline mb-4">
+                                    <input
+                                        type="number"
+                                        class="form-control form-control-lg"
+                                        name="otpval"
+                                        />
+                                    <!-- <label class="form-label"
+                                        for="form3Example1cg">OTP</label>     -->
+                                </div>                                
+                                <input type="submit" value="submit"/>
+                                
+                            </form>
+                            <p class="text-center text-muted mt-5 mb-0">
+                                <a href="{% url 'home' %}" class="text-body">Back to home</a> 
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
