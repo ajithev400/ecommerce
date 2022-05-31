@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from account.models import Account
+from user.models import Profile
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from store.models import product,Variation,VarientColor
@@ -11,9 +12,13 @@ from account.decorators import unauthenticated_user,allowed_user
 
 def admin_dashboard(request):
     products = product.objects.all()[0:6]
+    users = Account.objects.all()
+    profile = Profile.objects.all()
 
     context = {
         'products':products,
+        'users':users,
+        'profile':profile
     }
     return render(request,'admin/admin_dashboard.html',context)
 
@@ -73,6 +78,7 @@ def add_product(request):
     context = {'form':form}
     return render(request,'store/add_product.html',context)
 
+# -----add new variant-----
 @allowed_user(allowed_roles=['admin'])
 def add_verient(request,pk):
     selected_product = product.objects.get(id=pk)
@@ -80,14 +86,14 @@ def add_verient(request,pk):
         form = AddVariationForm(request.POST,request.FILES)
         
         if form.is_valid():
-            var = form.save(commit=False)
-            var.product = selected_product
+            variant = form.save(commit=False)
+            variant.product = selected_product
             if len(request.FILES) != 0:
-                var.image1 = request.FILES['image1']
-                var.image2 = request.FILES['image2']
-                var.image3 = request.FILES['image3']
-                var.image4 = request.FILES['image4']
-            var.save()
+                variant.image1 = request.FILES['image1']
+                variant.image2 = request.FILES['image2']
+                variant.image3 = request.FILES['image3']
+                variant.image4 = request.FILES['image4']
+            variant.save()
             messages.success(request,'Variation saved Successfully')
             return redirect('list_product')
         else:
@@ -98,6 +104,7 @@ def add_verient(request,pk):
     context = {'form':form}
 
     return render(request,'store/add_variant.html',context)
+
 
 @allowed_user(allowed_roles=['admin'])
 def list_product(request):
@@ -120,3 +127,99 @@ def view_product(request,pk):
         'variants':variants,
     }
     return render(request,'store/view_product.html', context )
+
+
+
+@allowed_user(allowed_roles=['admin'])
+def edit_product(request,pk):
+    edit_product = product.objects.get(id=pk)
+    form = AddProductForm(instance=edit_product)
+    if request.method == 'POST':
+        form = AddProductForm(
+            request.POST, request.FILES, instance = edit_product
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, "product updated Successfully")
+            return redirect('view-product',pk=pk)
+        else:
+            messages.info(request, "Something went wrong")
+            return redirect("add_product")
+    context = {
+        'form':form
+    }
+    return render(request,'store/edit_product.html',context)
+
+
+@allowed_user(allowed_roles=['admin'])
+def delete_product(request,pk):
+    product.objects.get(id=pk).delete()
+    messages.success(request,'Product has been deleted')
+    return redirect('list_product')
+
+@allowed_user(allowed_roles=['admin'])
+def activate_product(request, pk):
+    selected_product = product.objects.get(id = pk)
+    if selected_product.is_available:
+        selected_product.is_available = False
+        messages.success(request,"Done, product is not avilable now !")
+    else:
+        selected_product.is_available = True
+        messages.success(request,"Done, product is Available !")
+    selected_product.save()
+
+    return redirect('list_product')
+
+
+# ---edit variants----
+
+@allowed_user(allowed_roles=['admin'])
+def edit_variant(request,pk):
+    edit_variant = Variation.objects.get(id = pk)
+    form = AddVariationForm(instance = edit_variant)
+    if request.method == 'POST':
+        form = AddVariationForm(request.POST,request.FILES, instance= edit_variant)
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Variation updated Successfully')
+            return redirect('list_product')
+        else:
+            messages.info(request,'somthing went wrong !')
+            return redirect('edit_variant')
+    context ={'form':form}
+    return render(request,'store/edit_variant.html',context)
+
+
+# ---activate variant---
+
+@allowed_user(allowed_roles=['admin'])
+def activate_variant(request,pk):
+    selected_variant = Variation.objects.get(id = pk)
+    if selected_variant.is_available:
+        selected_variant.is_available = False
+        messages.success(request, "Done, Product is not available now !")
+    else:
+        selected_variant.is_available = True
+        messages.success(request, "Done, Product is available !")
+    selected_variant.save()
+    return redirect('list_product')
+
+def customers(request):
+    customers = Account.objects.all()
+    context = {
+        'customers':customers
+    }
+    return render(request,'admin/customers.html',context)
+
+def customer_pickoff(request,pk):
+    user = Account.objects.get(id=pk)
+    if user.is_active:
+        user.is_active = False
+        user.is_rejectd = False
+        messages.success(request, "Done, The User is Blocked !")
+    else:
+        user.is_active = True
+        user.is_rejectd = True
+        messages.success(request, "Done, user is Unblocked ")
+    user.save()
+    return redirect('customers')

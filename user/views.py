@@ -1,3 +1,4 @@
+from sys import implementation
 from django.contrib import messages
 from django.shortcuts import redirect, render,get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -7,7 +8,9 @@ from account.models import Account
 from account.otp import send_otp,verify_otp
 from django.contrib.auth import authenticate,login,logout
 from user.models import Address,Profile, Roles
-from store.models import Variation,product
+from store.models import Variation,product,VarientSize
+from cart.models import Cart, CartItems
+from cart.views import _cart_id
 from category.models import category
 from account.decorators import unauthenticated_user
 
@@ -76,7 +79,6 @@ def user_register(request):
             profile.phone = mobile_number
             profile.email = email
             profile.profile_picture = 'user/profile/profile.png'
-            profile.role = Roles.objects.get(group='customer')
             profile.save()
             user.save()
             send_otp(mobile_number)
@@ -92,7 +94,6 @@ def user_register(request):
 
 
 def register_otp(request):
-    
     if request.method == 'POST':
         check_otp = request.POST.get('otpval')
         print(check_otp)
@@ -121,17 +122,36 @@ def cart_list(request):
     return render(request,'cart/cart.html')
 
 
-def product_details(request,pk):
-
-    item = product.objects.get(id = pk)
-    variant = Variation.objects.all().filter(product=item)
-
+def product_details(request,product_slug,variant_slug):
     newproducts = product.objects.all()
     
+    try:
+        single_variant = Variation.objects.get(
+            product__slug =product_slug ,slug = variant_slug
+        )
+        in_cart = CartItems.objects.filter(
+            varient = single_variant, 
+        ).exists()
+        # Cart__cart_id=_cart_id(request),
+        size = VarientSize.objects.filter(
+            product = single_variant
+        )
+        print(in_cart) 
+        
+    except Exception as e:
+        raise e
+    print(single_variant)
+    variants = Variation.objects.filter(product = single_variant.product.id)
+    print(variants)
     context = {
-        'item':item,
-        'variant':variant,
-        'newproducts':newproducts
+        'single_variant':single_variant,
+        'in_cart':in_cart,
+        'variants':variants,
+        'newproducts':newproducts,
+        'size':size
+
     }
 
     return render(request,'thedoo/product_detail.html',context)
+
+

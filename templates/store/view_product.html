@@ -21,20 +21,20 @@
           <h5>
             {{item}}
           </h5>
-          <h6>Margin Price: {{variant.margin_price}}</h6>
-          <h6>Price: {{variant.price}}</h6>
+          <h6>Margin Price: {{item.margin_price}}</h6>
+          <h6>Price: {{item.price}}</h6>
         </a>
         <p>
           {{item.description}}
         </p>
-        <button type="button" class="btn btn-outline-primary btn-sm">Edit</button> <a href="{% url 'add_variant' item.id %}" class="btn btn-outline-primary btn-sm">Add New Variant</a>
+        <a href="{% url 'edit_product' item.id %}" type="button" class="btn btn-outline-primary btn-sm">Edit</a> <a href="{% url 'add_variant' item.id %}" class="btn btn-outline-primary btn-sm">Add New Variant</a>
       </div>
     </div>
   </div>    
 </div>
 <div class="card-group">
     {% for variant in variants %}
-      <div class="col-md-4 mt-4 ms-2">
+      <div class="col-md-3 col-sm-12 mt-4 ms-2">
         <div class="card card-blog card-plain">
           <div class="position-relative">
             <a class="d-block blur-shadow-image">
@@ -49,11 +49,11 @@
               </h5>
               <h6>Stock: {{variant.stock}}</h6>
               <h6>color: {{variant.color}}</h6>
-              <h6>Margin Price: {{variant.margin_price}}</h6>
-              <h6>Price: {{variant.price}}</h6>
+              <h6>Margin Price: {{variant.product.margin_price}}</h6>
+              <h6>Price: {{variant.product.price}}</h6>
             </a>
             <p></p>
-            <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
+            <a href="{% url 'edit_variant' variant.id %}" class="btn btn-outline-primary btn-sm">Edit</a>
           </div>
         </div>
       </div>

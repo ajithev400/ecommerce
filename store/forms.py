@@ -1,5 +1,5 @@
 from dataclasses import fields
-from .models import ReviewRating,product,Variation,VarientColor
+from .models import ReviewRating,product,Variation,VarientColor,VarientSize
 from django.forms import ModelForm
 
 
@@ -10,8 +10,7 @@ class AddProductForm(ModelForm):
             "category",
             "sub_category",
             "product_name",
-            "slug",
-            "price",
+            "price",    
             "margin_price",
             "description",
             "image",
@@ -28,15 +27,11 @@ class AddVariationForm(ModelForm):
         fields = (
             'product',
             'varient_name',
-            'slug',
             'color',
-            'size',
             'image1',
             'image2',
             'image3',
             'image4',
-            'margin_price',
-            'price',
             # 'stock',
             'is_available'
         )
@@ -46,6 +41,14 @@ class AddVariationForm(ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs["class"]="my-2 form-control"
 
+class AddSizeForm(ModelForm):
+    class Meta:
+        model = VarientSize
+        fields = (
+            'product',
+            'size',
+            'stock'
+        )
 
 class  ReviewForm(ModelForm):
     class Meta:

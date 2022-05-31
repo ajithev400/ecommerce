@@ -41,7 +41,6 @@ class Profile(models.Model):
     ],)
     phone = models.CharField(max_length=15)
     email = models.EmailField(max_length=100)
-    role = models.OneToOneField(Roles,on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to="user/profile")
 
     def __str__(self):

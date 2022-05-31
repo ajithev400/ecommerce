@@ -9,6 +9,7 @@ urlpatterns = [
     path('register-otp/',views.register_otp,name='register_otp'),
     path('logout/',views.logout_user,name='logout'),
 
-    path('product-detail/<str:pk>/',views.product_details,name='product_details'),
+    path('product-detail/<slug:product_slug>/<slug:variant_slug>/',views.product_details,name='product_details'),
+    # path(r'^products/(?P<product_slug>\w+)/(?P<variant_slug>\w+)/$',views.product_details,name='product_details'),
 
 ]

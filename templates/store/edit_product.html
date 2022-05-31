@@ -1,0 +1,46 @@
+{% extends 'admin/admin.html' %}
+{% load static %}
+
+{% block title %}
+    Edit product
+{% endblock title %}
+    
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header pb-0">
+            
+          </div>
+          <form method="POST" enctype="multipart/form-data" class="card-body">
+            {% csrf_token %}
+            <p class="text-uppercase text-sm">Edit Product Information</p>
+            <div class="row">
+              
+              {% for field in form %}     
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="example-text-input" class="form-control-label">{{field.label}}</label>
+                  {{field}}
+                </div>
+              </div>
+              {% endfor %}
+                
+            </div>
+    
+            <div class="d-flex align-items-center">
+                <button type="submit" class="btn btn-primary btn-sm ms-auto">Edit Product</button>
+              </div>
+          </form>
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+    
+{% endblock content %}
+    

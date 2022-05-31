@@ -15,17 +15,18 @@
 			<div class="wrap-slick2">
 				<div class="slick2"> 
                     {% for variation in variations|slice:"0:8" %}   
-					<div class="item-slick2 p-l-15 p-r-15">
+					<div class="item-slick2 p-l-15 p-r-15 product_data">
 						<!-- Block2 -->
 						<div class="block2">
 							<div class="block2-img wrap-pic-w of-hidden pos-relative block2-labelnew">
 								<img src="{{variation.image1.url}}" alt="IMG-PRODUCT">
 
 								<div class="block2-overlay trans-0-4">
-									<a href="{% url 'product_details' variation.id %}" class="block2-btn-addwishlist hov-pointer trans-0-4">
+									{% csrf_token %}
+									<button class=" addtowishlist block2-btn-addwishlist hov-pointer trans-0-4">
 										<i class="icon-wishlist icon_heart_alt" aria-hidden="true"></i>
 										<i class="icon-wishlist icon_heart dis-none" aria-hidden="true"></i>
-									</a>
+									</button>
 
 									<div class="block2-btn-addcart w-size1 trans-0-4">
 										<!-- Button -->
@@ -37,12 +38,12 @@
 							</div>
 
 							<div class="block2-txt p-t-20">
-								<a href="{% url 'product_details' variation.id %}" class="block2-name dis-block s-text3 p-b-5">
+								<a href="{% url 'product_details' variation.product.slug  variation.slug %}" class="block2-name dis-block s-text3 p-b-5">
 									{{variation}}
 								</a>
 
 								<span class="block2-price m-text6 p-r-5">
-									₹{{variation.price}}  
+									₹{{variation.product.price}}  
 								</span>
 							</div>
 						</div>
@@ -53,6 +54,8 @@
 			</div>
 
 		</div>
+		<script src="{% static 'js/updateCart/jquery-3.6.0.min.js' %}"></script>
+		<script src="{% static 'js/updateCart/custom.js' %}"></script>
 	</section>
 {% endblock content %}
     

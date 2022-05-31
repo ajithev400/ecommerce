@@ -16,19 +16,13 @@
 			Home
 			<i class="fa fa-angle-right m-l-8 m-r-9" aria-hidden="true"></i>
 		</a>
-
-		<a href="product.html" class="s-text16">
-			{{item.subcategory.category_name}}
-			<i class="fa fa-angle-right m-l-8 m-r-9" aria-hidden="true"></i>
-		</a>
-
 		<a href="#" class="s-text16">
-			{{item.category.category_name}}
+			{{single_variant.product.category}}
 			<i class="fa fa-angle-right m-l-8 m-r-9" aria-hidden="true"></i>
 		</a>
 
 		<span class="s-text17">
-			{{item}}
+			{{single_variant}}
 		</span>
 	</div>
 
@@ -39,52 +33,62 @@
 				<div class="wrap-slick3 flex-sb flex-w">
 					<div class="wrap-slick3-dots"></div>
 
-					<div class="slick3">			
-						<!-- {% for variant in variant %}
-								<div class="item-slick3" data-thumb="{{variant.image1.url}}">
-									<div class="wrap-pic-w">
-										<img src="{{variant.image1.url}}" alt="IMG-PRODUCT">
-									</div>
-								</div>	
-						{% endfor %} -->
-						{% for variant in variant %}
-						<div class="item-slick3" data-thumb="{{variant.image1.url}}">
-							<div class="wrap-pic-w">
-								<img src="{{variant.image1.url}}" alt="IMG-PRODUCT">
-							</div>
-						</div>
-						<div class="item-slick3" data-thumb="{{variant.image2.url}}">
-							<div class="wrap-pic-w">
-								<img src="{{variant.image2.url}}" alt="IMG-PRODUCT">
-							</div>
-						</div>
-						<div class="item-slick3" data-thumb="{{variant.image3.url}}">
-							<div class="wrap-pic-w">
-								<img src="{{variant.image3.url}}" alt="IMG-PRODUCT">
-							</div>
-						</div>
-						<div class="item-slick3" data-thumb="{{variant.image4.url}}">
-							<div class="wrap-pic-w">
-								<img src="{{variant.image4.url}}" alt="IMG-PRODUCT">
-							</div>
-						</div>
-						{% endfor %}
+					<div class="slick3">						
 
+						<div class="item-slick3" data-thumb="{{single_variant.image1.url}}">
+							<div class="wrap-pic-w">
+								<img src="{{single_variant.image1.url}}" alt="IMG-PRODUCT">
+							</div>
+						</div>
+						<div class="item-slick3" data-thumb="{{single_variant.image2.url}}">
+							<div class="wrap-pic-w">
+								<img src="{{single_variant.image2.url}}" alt="IMG-PRODUCT">
+							</div>
+						</div>
+						<div class="item-slick3" data-thumb="{{single_variant.image3.url}}">
+							<div class="wrap-pic-w">
+								<img src="{{single_variant.image3.url}}" alt="IMG-PRODUCT">
+							</div>
+						</div>
+						<div class="item-slick3" data-thumb="{{single_variant.image4.url}}">
+							<div class="wrap-pic-w">
+								<img src="{{single_variant.image4.url}}" alt="IMG-PRODUCT">
+							</div>
+						</div>
+																	
 					</div>
 				</div>
 			</div>
 
 			<div class="w-size14 p-t-30 respon5">
 				<h4 class="product-detail-name m-text16 p-b-13">
-					{{item}}
+					{{single_variant}}
 				</h4>
 
 				<span class="m-text17">
-					₹{{item.price}}
+					₹{{single_variant.product.price}}
 				</span>
 
+				<ul class="bgwhite" style="display: flex;">
+					
+					{% for variant in variants %}
+						
+					<li class="flex-w p-b-20">
+						<!--  'product_detail' single_variant.product.slug variant.slug  -->
+						<a href="{% url 'product_details' variant.product.slug  variant.slug %}" class="dis-block wrap-pic-w w-size22 m-r-20 trans-0-4 hov4">
+							<img src="{{variant.image1.url}}" alt="variant">
+						</a>
+						<!-- <p>
+							Product Slug: {{single_variant.product.slug}}  variant slug : {{variant.slug}}
+ 						</p> -->
+					</li>
+					{% endfor %}
+						
+				</ul>
+				
+
 				<p class="s-text8 p-t-10">
-					{{item.description}}
+					{{single_variant.product.description}}
 				</p>
 
 				<!--  -->
@@ -97,33 +101,29 @@
 						<div class="rs2-select2 rs3-select2 bo4 of-hidden w-size16">
 							<select class="selection-2" name="size">
 								<option>Choose an option</option>
-								<option>Size S</option>
-								<option>Size M</option>
-								<option>Size L</option>
-								<option>Size XL</option>
+								
+								{% for size in size %}
+									
+								<option>{{size.size}}</option>
+								
+								{% endfor %}
+									
 							</select>
 						</div>
 					</div>
 
 					<div class="flex-m flex-w">
 						<div class="s-text15 w-size15 t-center">
-							Color
+							Color :
 						</div>
-
-						<div class="rs2-select2 rs3-select2 bo4 of-hidden w-size16">
-							<select class="selection-2" name="color">
-								<option>Choose an option</option>
-								<option>Gray</option>
-								<option>Red</option>
-								<option>Black</option>
-								<option>Blue</option>
-							</select>
+						<div class="s-text15 w-size15 t-center">
+							{{single_variant.color}}
 						</div>
 					</div>
 
 					<div class="flex-r-m flex-w p-t-10">
 						<div class="w-size16 flex-m flex-w">
-							<div class="flex-w bo5 of-hidden m-r-22 m-t-10 m-b-10">
+							<!-- <div class="flex-w bo5 of-hidden m-r-22 m-t-10 m-b-10">
 								<button class="btn-num-product-down color1 flex-c-m size7 bg8 eff2">
 									<i class="fs-12 fa fa-minus" aria-hidden="true"></i>
 								</button>
@@ -133,13 +133,29 @@
 								<button class="btn-num-product-up color1 flex-c-m size7 bg8 eff2">
 									<i class="fs-12 fa fa-plus" aria-hidden="true"></i>
 								</button>
-							</div>
+							</div> -->
 
 							<div class="btn-addcart-product-detail size9 trans-0-4 m-t-10 m-b-10">
 								<!-- Button -->
-								<a href="{% url 'add_cart' item.id %}" class="flex-c-m sizefull bg1 bo-rad-23 hov1 s-text1 trans-0-4">
+								
+								{% if single_variant.variantesize.stock <= 0 %}
+								<a href="" class="flex-c-m sizefull bg1 bo-rad-23 hov1 s-text1 trans-0-4">
+									Out of Stock
+								</a>
+								{% else %}
+								
+								{% if in_cart %}
+								<a href="{% url 'cart' %}" class="flex-c-m sizefull bg1 bo-rad-23 hov1 s-text1 trans-0-4">
+									Go to Cart
+								</a>
+								{% else %}
+								<a href="{% url 'add_cart' single_variant.id %}" class="flex-c-m sizefull bg1 bo-rad-23 hov1 s-text1 trans-0-4">
 									Add to Cart
 								</a>
+								{% endif %}
+									
+								{% endif %}
+									
 							</div>
 						</div>
 					</div>
@@ -233,7 +249,7 @@
 							</div>
 
 							<div class="block2-txt p-t-20">
-								<a href="{% url 'product_details' products.id %}" class="block2-name dis-block s-text3 p-b-5">
+								<a href="" class="block2-name dis-block s-text3 p-b-5">
 									{{products}}
 								</a>
 
@@ -268,7 +284,9 @@
 
 
 
-<
+<script>
+	
+</script>
 
 </body>
 {% endblock content %}

@@ -1,6 +1,7 @@
+from turtle import ondrag
 from django.db import models
 from account.models import Account
-from store.models import Variation,product
+from store.models import Variation,product,VarientSize
 
 class Cart(models.Model):
     cart_id = models.CharField(max_length=60,null=True,blank=True)
@@ -14,6 +15,7 @@ class CartItems(models.Model):
     varient = models.ForeignKey(Variation, on_delete=models.CASCADE)
     Cart = models.ForeignKey(Cart,on_delete=models.CASCADE,null=True,blank=True)
     quantity = models.IntegerField()
+    size = models.ForeignKey(VarientSize,on_delete=models.CASCADE,null=True,blank=True)
     is_active = models.BooleanField(default=True)
 
     def total(self):
@@ -21,3 +23,12 @@ class CartItems(models.Model):
     
     def __unicode__(self):
         return self.varient
+
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    varient = models.ForeignKey(Variation, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.varient.varient_name
