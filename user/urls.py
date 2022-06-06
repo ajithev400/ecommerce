@@ -10,6 +10,7 @@ urlpatterns = [
     path('logout/',views.logout_user,name='logout'),
 
     path('product-detail/<slug:product_slug>/<slug:variant_slug>/',views.product_details,name='product_details'),
-    # path(r'^products/(?P<product_slug>\w+)/(?P<variant_slug>\w+)/$',views.product_details,name='product_details'),
+    path('user-address/',views.user_address,name='user_address'),
+    path('user-profile/',views.user_profile,name='user_profile'),
 
 ]

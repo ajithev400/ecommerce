@@ -1,11 +1,9 @@
-from multiprocessing import context
-from statistics import quantiles
-from urllib import request
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render,redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
-
+from django.contrib.auth.decorators import login_required
+from order.forms import OrderForm
 import user
 from .models import Cart,CartItems,Wishlist
 from store.models import Variation, VarientSize
@@ -20,12 +18,18 @@ def _cart_id(request):
     return cart
 
 # ----add product to cart-----
-def add_cart(request,product_id):
-    
+def add_cart(request):
+    if request.POST.get('action')=='POST':
+        print('action post')
+        product_id = request.POST['product_id']
+        size = request.POST['size']
     current_user = request.user
 
     varient = Variation.objects.get(id=product_id)
-    size = VarientSize.objects.get(product=varient)
+    try:
+        size = VarientSize.objects.get(product=varient,size=size)
+    except:
+        messages.error(request,'Choose the size')
     if current_user.is_authenticated:
         try: 
             cart_item = CartItems.objects.get(
@@ -41,6 +45,7 @@ def add_cart(request,product_id):
                 user = current_user
             )
             cart_item.save()
+        
         return redirect('cart')
     
     else:
@@ -63,7 +68,9 @@ def add_cart(request,product_id):
                 size = size
             )
             cart_item.save()
-        return redirect("cart") 
+            
+            return redirect("cart") 
+    return redirect("cart") 
 
 def update_cart(request):
 
@@ -91,7 +98,7 @@ def cart(request, total=0, quantity=0, cart_items=None):
             )
         else:
             cart = Cart.objects.get(cart_id = _cart_id(request))
-            cart_items = CartItems.objects.filter(Cart= cart, is_active = True)
+            cart_items = CartItems.objects.filter(Cart= cart,is_active = True)
 
         for cart_item in cart_items:
             total += cart_item.varient.product.price * cart_item.quantity
@@ -128,8 +135,8 @@ def delete_cart(request,product_id):
         return redirect('cart')
 
 def remove_cart(request, product_id):
-    current_user = request.user
-    if current_user.is_authenticated:
+    user = request.user
+    if user.is_authenticated:
         variant = get_object_or_404(Variation, id = product_id)
         cart_item = CartItems.objects.get(varient = variant ,cart = cart)
         if cart_item.quantity > 1:
@@ -140,6 +147,7 @@ def remove_cart(request, product_id):
         return redirect('cart')
 
 
+@login_required(login_url="login")
 def checkout(request, total=0, quantity=0, cart_items=None):
     tax = 0
     grand_total = 0
@@ -155,13 +163,14 @@ def checkout(request, total=0, quantity=0, cart_items=None):
 
         for cart_item in cart_items:
             total = total = total+(
-                cart_item.product.price * cart_item.quantity
+                cart_item.varient.product.price * cart_item.quantity
             )
         tax = (2*total)/100
         grand_total = total+tax
     except ObjectDoesNotExist:
         pass
-
+    addresses = Address.objects.filter(user = request.user)
+    form = OrderForm()
     context = {
         'total':total,
         'quantity':quantity,
@@ -169,30 +178,30 @@ def checkout(request, total=0, quantity=0, cart_items=None):
         'tax':tax,
         'grand_total':grand_total,
         'addresses':addresses,
+        'form':form
         
     }
     return render(request,'user/checkout.html',context)
 
 def add_wishlist(request):
-    if request.method == "POST":
-        if request.user.is_authenticated:
-            prod_id = request.POST.get('product_id')
-            print(prod_id)
-            
-            product_check = Variation.objects.get(id = prod_id)
-           
-            if product_check:
-                if Wishlist.objects.filter(user=request.user , variant_id = prod_id):
-                    return JsonResponse({'status':"product already in wishlist"})
-                else:
-                    Wishlist.objects.create(user=request.user , variant_id = prod_id)
-                    return JsonResponse({'status':"product added to wishlist"})
-            else:
-                return JsonResponse({'status':"no such product found"})
-        else:
-
-            return JsonResponse({'status': "login to continue"})
+    if request.user.is_authenticated:
+        if request.POST.get('action')=='POST':
+            product_id = request.POST['productid']
+            print(product_id)
+            varient = Variation.objects.get(id = product_id)
+            try:
+                wishlist_items = Wishlist.objects.get(
+                    user = request.user, varient = varient
+                )
+            except Wishlist.DoesNotExist:
+                wishlist_items = Wishlist.objects.create(
+                    user = request.user,
+                    varient = varient
+                )
+                wishlist_items.save()
     return redirect('home')
+
+
 
 def wishlist(request):
     wishlist = Wishlist.objects.filter(user = request.user)
@@ -201,20 +210,11 @@ def wishlist(request):
     }
     return render(request,'user/wishlist.html',context)
 
-# def add_wishlist(request,product_id):
-#     if request.user.is_authenticated:
-#         try :
-#             product = Variation.objects.get(id = product_id)
-#         except ObjectDoesNotExist:
-#             pass
 
-#         if product:
-#             if Wishlist.objects.filter(user = request.user, variant_id = product_id):
-#                 return JsonResponse({'status':"product already in wishlist"})
-#             else:
-#                 Wishlist.objects.create(user = request.user, variant_id = product_id)
-#                 return JsonResponse({'status':"product added to wishlist"})
-#         else:
-#             return JsonResponse({'status':"no such product found"})
-#     else:
-#         return JsonResponse({'status': "login to continue"})
+def delete_wi(request,product_id):
+    user = request.user
+    product = product.objects.get(id = product_id)
+    item = Wishlist.objects.get(user = user, varient = product)
+    item.delete()
+    
+    return('wishlist')

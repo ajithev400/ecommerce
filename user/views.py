@@ -1,4 +1,3 @@
-from sys import implementation
 from django.contrib import messages
 from django.shortcuts import redirect, render,get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -7,12 +6,14 @@ from account.forms import RegistrationForm
 from account.models import Account
 from account.otp import send_otp,verify_otp
 from django.contrib.auth import authenticate,login,logout
+from user.forms import AddAdddressForm,UserProfileForm
 from user.models import Address,Profile, Roles
 from store.models import Variation,product,VarientSize
 from cart.models import Cart, CartItems
 from cart.views import _cart_id
 from category.models import category
 from account.decorators import unauthenticated_user
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     variations = Variation.objects.filter(is_available=True)
@@ -39,6 +40,19 @@ def login_user(request):
         
         user = authenticate(request,username=email,password=password)        
         if user is not None:
+            try:
+                cart = Cart.objects.get(cart_id = _cart_id(request))
+                is_cart_item_exists = CartItems.objects.filter(Cart=cart).exists()
+                if is_cart_item_exists:
+                    cart_item = CartItems.objects.filter(Cart = cart)
+                    print(cart_item)
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                print('Except block activated.')
+                pass
+
             login(request,user)
             return redirect('home')
         else:
@@ -130,7 +144,7 @@ def product_details(request,product_slug,variant_slug):
             product__slug =product_slug ,slug = variant_slug
         )
         in_cart = CartItems.objects.filter(
-            varient = single_variant, 
+            varient = single_variant, Cart__cart_id=_cart_id(request)
         ).exists()
         # Cart__cart_id=_cart_id(request),
         size = VarientSize.objects.filter(
@@ -154,4 +168,43 @@ def product_details(request,product_slug,variant_slug):
 
     return render(request,'thedoo/product_detail.html',context)
 
+@login_required(login_url="login")
+def user_address(request):
+    if request.method == 'POST':
+        form = AddAdddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
 
+            messages.success(request,'Address added Successfully')
+            return redirect('user_address')
+    address = Address.objects.filter(user = request.user)
+    form = AddAdddressForm()
+    context = {
+        'form':form,
+        'address':address
+    }
+
+    return render(request,'user/address.html',context)
+
+@login_required(login_url="login")
+def user_profile(request):
+    user = request.user
+    user_profile = Profile.objects.get(user=user)
+    form = UserProfileForm(instance=user_profile)
+    if request.method == 'POST':
+        form = UserProfileForm(
+            request.POST,request.FILES,instance=user_profile
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated Successfully")
+            return redirect('user_profile')
+        else:
+            print(form.errors)
+    context = {
+        'form':form,
+        'user_profile':user_profile
+    }
+    return render( request, 'user/profile.html',context)

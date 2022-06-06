@@ -6,6 +6,8 @@
 {% endblock title %}
 
 {% block content %}
+
+{% include 'thedoo/header.html' %}
 <section class="section-content padding-y bg">
     <div class="container">
     
@@ -17,7 +19,7 @@
             <article class="card">
                 <header class="card-header mb-2" style="display: flex; justify-content: space-between;">
                     <strong class="d-inline-block mr-3">My Addresses</strong>
-                    <a href="#">Add Address</a>
+                    <a href="{% url 'user_address' %}">Add Address</a>
                 </header>
     
                 <div class="container">
@@ -25,7 +27,7 @@
                         {% for address in addresses %}
                         <div class="row col-12">
                             <div class="col-md-1 pt-2 text-center">
-                                <input type="radio" onchange="a('{{address.first_name}}','{{address.last_name}}','{{address.address_line_1}}','{{address.address_line_2}}','{{address.city}}','{{address.state}}','{{address.country}}','{{address.pincode}}','{{address.phone_number}}','{{address.email}}')"
+                                <input type="radio" onchange="a('{{address.first_name}}','{{address.last_name}}','{{address.address1}}','{{address.address2}}','{{address.city}}','{{address.state}}','{{address.country}}','{{address.pincode}}','{{address.phone}}','{{address.email}}')"
                                     id="{{address.id}}" name="address" value="{{address.id}}">
                             </div>
                             <div class="col-md-11 ">
@@ -41,7 +43,7 @@
                                                         <p class="card-text mb-0">{{address.full_address}}
                                                         </p>
                                                     </div>
-                                                    <!-- <div class="col-md-6">
+                                                    <div class="col-md-6">
                                                         <p class="card-text mb-0">{{address.city}},
                                                             {{address.state}}</p>
                                                         <p class="card-text mb-0">{{address.country}}, PIN:
@@ -49,7 +51,7 @@
                                                         </p>
                                                         <p class="card-text mb-0">Phone:
                                                             {{address.all_numbers}}</p>
-                                                    </div> -->
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -69,7 +71,7 @@
             </article>
     
             <h4 class="card-title mb-4 mt-4">Billing Address</h4>
-            <form action="#" method="POST">
+            <form action="{% url 'place_order' %}" method="POST">
                 {% csrf_token %}
                 <div class="form-row">
                     <div class="col form-group">
@@ -87,18 +89,19 @@
                         <input type="email" name="email" id="email"  class="form-control" required>
                     </div>
                     <div class="col form-group">
-                        <label for="">Phone Number</label>
-                        <input type="text" name="phone_number" id="phone_number" class="form-control" required>
+                        <label for="">Phone</label>
+                        <input type="text" name="phone" id="email"  class="form-control" required>
                     </div>
+        
                 </div>
                 <div class="form-row">
                     <div class="col form-group">
                         <label for="">Address Line 1</label>
-                        <input type="text" name="address_line_1" id="address_line_1" class="form-control" required>
+                        <input type="text" name="address1" id="address1" class="form-control" required>
                     </div>
                     <div class="col form-group">
                         <label for="">Address Line 2</label>
-                        <input type="text" name="address_line_2" id="address_line_2" class="form-control" required>
+                        <input type="text" name="address2" id="address2" class="form-control" required>
                     </div>
                 </div>
                 <div class="form-row">
@@ -128,16 +131,16 @@
     </div> <!-- card.// -->
     
         </aside> <!-- col.// -->
-        <aside class="col-lg-6">
+        <aside class="col-lg-3">
     
-            <div class="card-body  shadow-lg p-3 mb-5 bg-white rounded">
+            <div class="card-body shadow-lg p-3 mb-5 bg-white rounded">
     
                 <table class="table table-borderless table-shopping-cart">
                     <thead class="text-muted">
                     <tr class="small text-uppercase">
                       <th scope="col">Product</th>
-                      <th scope="col" width="120">Quantity</th>
-                      <th scope="col" width="120">Price</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Price</th>
                         
                     </tr>
                     </thead>
@@ -181,9 +184,9 @@
                     <tr>
                         <td>
                             <figure class="itemside align-items-center">
-                                <div class="aside"><img src="{{ cart_item.product.images.url }}" class="img-sm"></div>
+                                <div class="" ><img src="{{ cart_item.varient.image1.url }}" style="max-width: 100%; height: 8rem;" class="img-sm"></div>
                                 <figcaption class="info">
-                                    <a href="{{ cart_item.product.get_url }}" class="title text-dark">{{cart_item.product.product_name}}</a>
+                                    <a href="#" class="title text-dark">{{cart_item.varient.product.product_name}}</a>
                                     <!-- <p class="text-muted small">Matrix: 25 Mpx <br> Brand: Canon</p> -->
                                 </figcaption>
                             </figure>
@@ -241,11 +244,8 @@
                         </div>
                         
                     </div>
-                    <div class="d-flex flex-column p-4" >
-                        <!-- <div class="p-2"><input type="radio"  name="payment" value="PayPal" id="PayPal" checked>
-                            <label for="PayPal"></label> PayPal</div> -->
-                           
-                        <div class="p-2"><input type="radio"  name="payment"  value="Razorpay" id="Razorpay">
+                    <div class="d-flex flex-column p-4" >   
+                        <div class="p-2"><input type="radio"  name="payment"  value="Razorpay" id="Razorpay" checked>
                             <label for="Razorpay"></label>
                             Razorpay</div>
     
@@ -255,7 +255,7 @@
                     </div>
     
                 <button type="submit" name="submit" class="btn btn-primary btn-block">Place Order</button>
-                <a href="#" class="btn btn-light btn-block mb-3" id="checkoutbtn2">Continue Shopping</a>
+                <a href="{% url 'home' %}" class="btn btn-light btn-block mb-3" id="checkoutbtn2">Continue Shopping</a>
      
             </form>
             <!-- <div class="card">
@@ -279,7 +279,7 @@
                     </form>
                 </div>
             </div> -->
-            </div> <!-- card-body.// -->
+            </div> <!-- card-body.// -->    
             </div> <!-- card.// -->
             
     </aside> <!-- col.// -->
@@ -290,6 +290,88 @@
     
     </div> <!-- container .//  -->
     </section>
+    <script>
+        function a(first_name, last_name, address1, address2, city, state, country, pincode, phone, email) {
+            document.getElementById('first_name').value = first_name
+            document.getElementById('last_name').value = last_name
+            document.getElementById('address1').value = address1
+            document.getElementById('address2').value = address2
+            document.getElementById('city').value = city
+            document.getElementById('state').value = state
+            document.getElementById('country').value = country
+            document.getElementById('pincode').value = pincode
+            document.getElementById('phone').value = phone
+            document.getElementById('email').value = email
+    
+        }
+    </script>
+    
+    <style>
+        .error{
+            color: red;
+        }
+    </style>
+    <script>
+        $(document).ready(function ($) {
+            console.log("hai");
+            $("#address-form").validate({
+                rules: {
+                    first_name:{
+                        required: true
+                    },
+                    last_name:{
+                        required: true
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    address1:{
+                        required:true
+                    },
+                    city:{
+                        required:true
+                    },
+                    state:{
+                        required:true
+                    },
+                    pincode:{
+                        required:true,
+                        minlength:6,
+                        maxlength:6
+                    },
+                    phone:{
+                        required:true,
+                        minlength:10,
+                        maxlength:10
+                    },
+                },
+                messages: {
+                    email:{
+                        required: "Please enter your email",
+                    },
+                    phone:{
+                        required:"Please enter a phone number",
+                        minlength:"Please provide a valid number",
+                        maxlength:"Please provide a valid number"
+                    },
+                    pincode:{
+                        required:"Pincode is required ",
+                        minlength:"Please provide a valid pincode",
+                        maxlength:"Please provide a valid pincode"
+                    },
+                    
+                },
+                submitHandler: function (form) {
+                    form.submit();
+                }
+    
+            });
+        });
+    </script>
+    <!-- for coupon -->
+
+
 
 {% endblock content %}
     

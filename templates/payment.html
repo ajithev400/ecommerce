@@ -1,0 +1,223 @@
+{% extends 'base.html' %} {% load static %} {% block content%}
+<section class="section-content padding-y bg">
+  <div class="container">
+    <!-- ============================ COMPONENT 1 ================================= -->
+
+    <h4 class="text-center mb-10">Review Your Order And Make Payment</h4>
+    <div class="row mt-5  shadow-lg p-3 mb-5 bg-white rounded">
+      <aside class="col-lg-8">
+        <div class="card">
+            <h5 class="card-header">Billing Address</h5>
+            <div class="card-body">
+              <p class="card-text mb-0">{{order.full_name}}</p>
+              <p class="card-text mb-0">{{order.full_address}}</p>
+              <p class="card-text mb-0">{{order.city}},{{order.state}}</p>
+              <p class="card-text mb-0">{{order.country}}</p>
+              <p class="card-text mb-0">{{order.email}}</p>
+              <p class="card-text mb-0">{{order.phone}}</p>
+              {% if order.order_note %}
+                <b>Order Note :</b> {{order.order_note}}
+              {% endif %}
+            </div>
+        </div>
+        <div class="card">
+            <h5 class="card-header">Payment Method</h5>
+            <div class="card-body">
+              <p class="card-text">
+
+                {% if payment_type == 'Razorpay' %}
+                Razorpay
+                {% elif payment_type == 'cod' %}
+                Cash On Delivery
+                {% endif %}
+              </p>
+            </div>
+        </div>
+        <div class="card">
+            <h5 class="card-header">Review Products</h5>
+            <div class="card-body">
+                <table class="table table-borderless table-shopping-cart">
+                <thead class="text-muted">
+                <tr class="small text-uppercase">
+                  <th scope="col">Product</th>
+                  <th scope="col" width="120">Quantity</th>
+                  <th scope="col" width="120">Price</th>
+                    
+                </tr>
+                </thead>
+                <tbody>
+                  {% if item %}
+                  <tr>
+                      <td>
+                          <figure class="itemside align-items-center">
+                              <div class="aside"><img src="{{ item.image1.url }}" class="img-sm"></div>
+                              <figcaption class="info">
+                                  <a href="{{ item.get_url }}" class="title text-dark">{{item.product.product_name}}</a>
+                                  <!-- <p class="text-muted small">Matrix: 25 Mpx <br> Brand: Canon</p> -->
+                              </figcaption>
+                          </figure>
+                      </td>
+                      <td> 
+                          <!-- col.// -->
+                          <label for="">1</label>
+                      </td>
+                      <td> 
+                          <div class="price-wrap"> 
+                              {% if item.Offer_Price %}
+                              <var class="price">Rs {{ item.Offer_Price.new_price }}</var>
+                              <del  class="text-muted" style="font-size: 14px;">Rs {{item.sub_total}}</del> <br>
+                             <small class="text-muted"
+                                >Rs {{item.Offer_Price.new_price}} each
+                              </small>
+                              {% else %}
+                              <var class="price">Rs {{ item.sub_total }}</var>
+                              <small class="text-muted"
+                              >Rs {{item..sub_total}} each
+                            </small>
+                              {% endif %}
+                          </div> <!-- price-wrap .// -->
+                      </td>
+  
+                  </tr>
+                  {% else %}
+                    {% for cart_item in cart_items %}
+                <tr >
+                    <td>
+                        <figure class="itemside align-items-center">
+                            <div class="aside"><img src="{{ cart_item.varient.image1.url }}" style="max-width: 100%; height: 10rem;" class="img-sm img-thumbnail"></div>
+                            <figcaption class="info">
+                                <a href="" class="title text-dark">{{cart_item.varient.product.product_name}}</a>
+                                <!-- <p class="text-muted small">Matrix: 25 Mpx <br> Brand: Canon</p> -->
+                            </figcaption>
+                        </figure>
+                    </td>
+                    <td> 
+                        <!-- col.// -->
+                        <label for="">{{ cart_item.quantity }}</label>
+                    </td>
+                    <td> 
+                        <div class="price-wrap"> 
+                          {% if cart_item.product.Offer_Price %}
+                          <var class="price">Rs {{ cart_item.product.Offer_Price.new_price }}</var>
+                          <del  class="text-muted" style="font-size: 14px;">Rs {{cart_item.sub_total}}</del> <br>
+                         <small class="text-muted"
+                            >Rs {{cart_item.product.Offer_Price.new_price}} each
+                          </small>
+                          {% else %}
+                          <var class="price">Rs {{ cart_item.sub_total }}</var>
+                          <small class="text-muted"
+                          >Rs {{cart_item.sub_total}} each
+                        </small>
+                          {% endif %}
+                        </div> <!-- price-wrap .// -->
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+                {% endif %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- card.// -->
+      </aside>
+      <!-- col.// -->
+      <aside class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <dl class="dlist-align">
+              <dt>Total price:</dt>
+              <dd class="text-right">Rs {{ total }}</dd>
+            </dl>
+            <dl class="dlist-align">
+              <dt>Tax:</dt>
+              <dd class="text-right">Rs {{tax}}</dd>
+            </dl>
+            <dl class="dlist-align">
+              <dt>Discount:</dt>
+              <dd class="text-right text-success b">{{discount}}%</dd>
+            </dl>
+            <dl class="dlist-align">
+              <dt>Coupon Applied:</dt>
+              <dd class="text-right text-success b">-{{amount_pay}}</dd>
+            </dl>
+            <dl class="dlist-align">
+              <dt>Grand Total:</dt>
+              <dd class="text-right text-dark b">
+                <strong>Rs {{ grand_total }}</strong>
+              </dd>
+            </dl>
+            
+            <hr />
+
+
+
+
+            <p class="text-center mb-3">
+              <img
+                src="{% static './images/misc/payments.png' %}"
+                height="26"
+              />
+            </p>
+            {% if payment_type == 'Razorpay' %}
+            <div class="btn_container">
+              <!-- razorpay Button -->
+              <button class="btn btn-outline-primary col-12" id="pay-btn">Razorpay</button>
+            </div>
+          
+            {% elif payment_type == 'cod' %}
+            <div class="btn_container">
+              <!-- razorpay Button -->
+              <a href="{% url 'cod' %}" class="btn btn-outline-primary col-12">Cash on delivery</a>
+            </div>
+            {% endif %}
+
+          </div>
+          <!-- card-body.// -->
+        </div>
+        <!-- card.// -->
+      </aside>
+      <!-- col.// -->
+    </div>
+    <!-- row.// -->
+    <!-- ============================ COMPONENT 1 END .// ================================= -->
+  </div>
+  <!-- container .//  -->
+</section>
+
+<!-- razorpay -->
+<!-- Razorpay's Javascript code. -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+     
+    // Enter the Key ID generated from the Dashboard
+    key: "{{rzp_test_Yqjko6NjeiK8gU}}",
+     
+    // Amount is in currency subunits.
+    // Default currency is INR. Hence,
+    // 50000 refers to 50000 paise
+    amount: "{{ razorpay_amount }} ",
+    currency: "{{ currency }}",
+     
+    // Your/store name.
+    name: "Thedoo",
+     
+    // Pass the `id` obtained in the response of Step 1
+    order_id: "{{ razorpay_order_id }}",
+    callback_url: "{{ callback_url }}",
+  };
+   
+  // initialise razorpay with the options.
+  var rzp1 = new Razorpay(options);
+   
+  // add event listener to the payment button.
+  document.getElementById("pay-btn").onclick = function (e) {
+    rzp1.open();
+    e.preventDefault();
+  };
+</script>
+
+
+
+{% endblock %}

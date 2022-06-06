@@ -20,9 +20,13 @@ class Address(models.Model):
     city = models.CharField(max_length=100)
     pincode = models.IntegerField()
     add_type = models.CharField(max_length=50, choices=ADD_TYPE)
+    default = models.BooleanField(default=False)
 
     def __str__(self):
         return self.first_name
+    
+    def full_address(self):
+        return f"{self.address1}, {self.address2}"
 
 class Roles(models.Model):
     group = models.CharField(max_length=25,null=True)

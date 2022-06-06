@@ -166,7 +166,7 @@ $(document).ready(function(){
             $(".deleteadminprod").load(location.href + " .deleteadminprod");
         });
 
-
+        
 
 
 });

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+	User Address
+{% endblock title %}
+
+{% block content %}
+{% include 'thedoo/header.html' %}
+<div class="page-content">
+    <div class="dashboard">
+        <div class="container">
+            <div class="row">
+                
+
+
+
+                <div class="col-lg-10 col-md-10  mt-4 mt-lg-0">
+
+                    <div class="card-body">
+                        <form action="" method="POST" enctype='multipart/form-data'>
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-9 col-sm-12 row">
+                                    <div class="col-sm-6">
+                                        <label>First Name *</label>
+                                        {{form.first_name}}
+                                    </div><!-- End .col-sm-6 -->
+
+                                    <div class="col-sm-6">
+                                        <label>Last Name *</label>
+                                        {{form.last_name}}
+                                    </div><!-- End .col-sm-6 -->
+                                    <div class="col-sm-6">
+                                        <label>Gender *</label>
+                                        <input type="text" class="form-control" value="{{user_profile.gender}}" >
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label>Phone *</label>
+                                        {{form.phone}}
+                                    </div><!-- End .col-sm-6 -->
+                                    <div class="col-sm-6 text-center align-items-center ">
+                                        <label class="my-5 btn btn-dark " for="id_profile_picture">Change
+                                            Profile Picture*</label>
+                                        {{form.profile_picture}}
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <label>Email address *</label>
+                                        {{form.email}}
+
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 col-md-3">
+                                    <img style="border-radius: 150px;" width="150vh" height="150vh"
+                                        src="{{user_profile.profile_picture.url}}" alt="">
+                                </div>
+                            </div><!-- End .row -->
+
+
+
+                            <button type="submit" class="btn btn-outline-primary">
+                                <span>Update Profile</span>
+                                <i class="icon-long-arrow-right"></i>
+                            </button>
+                        </form>
+                    </div><!-- End .card-body -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .dashboard -->
+    </div><!-- End .page-content -->
+</div>
+{% endblock content %}
+    

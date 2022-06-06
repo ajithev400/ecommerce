@@ -22,18 +22,18 @@
 								<img src="{{variation.image1.url}}" alt="IMG-PRODUCT">
 
 								<div class="block2-overlay trans-0-4">
-									{% csrf_token %}
-									<button class=" addtowishlist block2-btn-addwishlist hov-pointer trans-0-4">
+									
+									<button data-index="{{variation.id}}" class=" addtowishlist block2-btn-addwishlist hov-pointer trans-0-4">
 										<i class="icon-wishlist icon_heart_alt" aria-hidden="true"></i>
 										<i class="icon-wishlist icon_heart dis-none" aria-hidden="true"></i>
 									</button>
 
-									<div class="block2-btn-addcart w-size1 trans-0-4">
-										<!-- Button -->
-										<a href="{% url 'add_cart' variation.id %}" class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4">
+									<!-- <div class="block2-btn-addcart w-size1 trans-0-4">
+										
+										<a href="{% url 'add_cart' %}" class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4">
 											Add to Cart
 										</a>
-									</div>
+									</div> -->
 								</div>
 							</div>
 
@@ -55,7 +55,29 @@
 
 		</div>
 		<script src="{% static 'js/updateCart/jquery-3.6.0.min.js' %}"></script>
-		<script src="{% static 'js/updateCart/custom.js' %}"></script>
+		<script>
+			$(document).on('click','.addtowishlist', function  (e) {
+				e.preventDefault();
+				var prodid = $(this).data('index')
+				$.ajax({
+					type : 'POST',
+					url : "{% url 'addtowishlist' %}",
+					data : {
+						productid : $(this).data('index'),
+						csrfmiddlewaretoken : "{{csrf_token}}",
+						action : 'POST', 
+					},
+					success : function (json) {
+						console.log(json)
+							},
+							
+					error : function (xhr, errmsg, err) {}
+				});
+			})
+		</script>
+
+		<!-- <script src="{% static 'js/updateCart/custom.js' %}"></script> -->
+		
 	</section>
 {% endblock content %}
     
