@@ -6,7 +6,7 @@
 {% endblock title %}
 
 {% block content %}
-    
+    {% include 'thedoo/header.html' %}
 	<!-- Title Page -->
 	<section class="bg-title-page p-t-50 p-b-40 flex-col-c-m" style="background-image: url('https://thecolor.blog/wp-content/uploads/2021/02/Amarillo-Canario.png');">
 		<h2 class="l-text2 t-center">
@@ -58,7 +58,9 @@
 							</div>
 
 							<div class="wra-filter-bar">
-								<div id="filter-bar"></div>
+								<input type="range" class="form-range" min="0" max="100" id="customRange2">
+								<div id="filter-bar">
+								</div>
 							</div>
 
 							<div class="flex-sb-m flex-w p-t-16">
@@ -129,18 +131,23 @@
 				</div>
 
 				<div class="col-sm-6 col-md-8 col-lg-9 p-b-50">
+					            <!-- Menu -->
+								<div class="wrap_menu">
+									<nav class="menu">
+										<ul class="main_menu">
+											
+											{% for sub_category in sub_cate %}	
+											<li>
+												<a href="?cate={{sub_category}}">{{sub_category}}</a>
+											</li>
+											{% endfor %}
+												
+										</ul>
+									</nav>
+								</div>
 					<!--  -->
 					<div class="flex-sb-m flex-w p-b-35">
 						<div class="flex-w">
-							<div class="rs2-select2 bo4 of-hidden w-size12 m-t-5 m-b-5 m-r-10">
-								<select class="selection-2" name="sorting">
-									<option>Default Sorting</option>
-									<option>Popularity</option>
-									<option>Price: low to high</option>
-									<option>Price: high to low</option>
-								</select>
-							</div>
-
 							<div class="rs2-select2 bo4 of-hidden w-size12 m-t-5 m-b-5 m-r-10">
 								<select class="selection-2" name="sorting">
 									<option>Price</option>
@@ -170,10 +177,10 @@
 									<img src="{{product.image1.url}}" alt="IMG-PRODUCT">
 
 									<div class="block2-overlay trans-0-4">
-										<a href="#" class="block2-btn-addwishlist hov-pointer trans-0-4">
+										<button data-index="{{product.id}}" class=" addtowishlist block2-btn-addwishlist hov-pointer trans-0-4">
 											<i class="icon-wishlist icon_heart_alt" aria-hidden="true"></i>
 											<i class="icon-wishlist icon_heart dis-none" aria-hidden="true"></i>
-										</a>
+										</button>
 									</div>
 								</div>
 
@@ -193,13 +200,34 @@
 					</div>
 
 					<!-- Pagination -->
-					<div class="pagination flex-m flex-w p-t-26">
-						<a href="#" class="item-pagination flex-c-m trans-0-4 active-pagination">1</a>
-						<a href="#" class="item-pagination flex-c-m trans-0-4">2</a>
-					</div>
+						<!-- <div class="pagination flex-m flex-w p-t-26">
+							<a href="#" class="item-pagination flex-c-m trans-0-4 active-pagination">1</a>
+							<a href="#" class="item-pagination flex-c-m trans-0-4">2</a>
+						</div> -->
 				</div>
 			</div>
 		</div>
 	</section>
+	<script src="{% static 'js/updateCart/jquery-3.6.0.min.js' %}"></script>
+	<script>
+		$(document).on('click','.addtowishlist', function  (e) {
+			e.preventDefault();
+			var prodid = $(this).data('index')
+			$.ajax({
+				type : 'POST',
+				url : "{% url 'addtowishlist' %}",
+				data : {
+					productid : $(this).data('index'),
+					csrfmiddlewaretoken : "{{csrf_token}}",
+					action : 'POST', 
+				},
+				success : function (json) {
+					console.log(json)
+						},
+						
+				error : function (xhr, errmsg, err) {}
+			});
+		})
+	</script>
 {% endblock content %}
     

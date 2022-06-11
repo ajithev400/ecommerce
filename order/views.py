@@ -1,11 +1,7 @@
-from audioop import reverse
-from locale import currency
-from multiprocessing import context
-import numbers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from cart.models import CartItems
-from store.models import Variation,product
+from store.models import Variation, VarientSize,product
 from user.models import Address
 from .forms import OrderForm
 from .models import Order,OrderProduct,Payment
@@ -17,6 +13,7 @@ from django.views.decorators.cache import never_cache
 from django.conf import settings
 from django.contrib import messages
 # Create your views here.
+
 razorpay_client = razorpay.Client(
     auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET)
 )
@@ -39,7 +36,7 @@ def payment(request):
         status=body["status"],
     )
     payment.save()
-    iorder.payment = payment
+    iorder.Payment = payment
     iorder.is_ordered = True
     iorder.save()
 
@@ -91,7 +88,6 @@ def place_order(request, total=0, quantity=0):
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
-            print('form valid')
             data = Order()           
             data.user = user
             data.first_name = form.cleaned_data["first_name"]
@@ -131,7 +127,7 @@ def place_order(request, total=0, quantity=0):
             else:
                 order_number = current_date + str(data.id)
                 print(data.id)
-                data.order_note = order_number
+                data.order_number = order_number
                 request.session['order_number'] = order_number
                 print('cod')
             data.save()
@@ -145,7 +141,7 @@ def place_order(request, total=0, quantity=0):
                 user = user, is_ordered=False, order_number=order_number
             )
             addresses = Address.objects.filter(user = request.user)
-            print(cart_items)
+            
             context = {
                 'order':order,
                 'cart_items':cart_items,
@@ -169,102 +165,204 @@ def place_order(request, total=0, quantity=0):
 
 
 
-
+@csrf_exempt
 def paymenthandler(request, total=0, quantity=0):
-    if request.POST == "POST":
-        try:
-            payment_id = request.POST.get('razorpay_payment_id')
-            razorpay_order_id = request.POST.get("razorpay_order_id")
-            signature = request.POST.get("razorpay_signature")
-            params_dict = {
-                "razorpay_order_id": razorpay_order_id,
-                "razorpay_payment_id": payment_id,
-                "razorpay_signature": signature,
-            }
+    user = request.user
+    try:
+        payment_id = request.POST.get('razorpay_payment_id', "")
+        razorpay_order_id = request.POST.get("razorpay_order_id", "")
+        signature = request.POST.get("razorpay_signature", "")
+        params_dict = {
+            "razorpay_order_id": razorpay_order_id,
+            "razorpay_payment_id": payment_id,
+            "razorpay_signature": signature,
+        }
 
-            result = razorpay_client.utility.verify_payment_signature(
-                params_dict
-            )
-            if result is None:
-                amount = request.session['razorpay_amount']
-                try:
-                    razorpay_client.payment.capture(payment_id, amount)
+        result = razorpay_client.utility.verify_payment_signature(
+            params_dict
+        )
+        if result is not None:
+            amount = request.session['razorpay_amount']
+            try:
+                razorpay_client.payment.capture(payment_id, amount)
+                order = Order.objects.get(
+                    user = user,
+                    is_ordered=False,
+                    order_number=razorpay_order_id,
+                )
+
+                payment = Payment(
+                    user=user,
+                    Payment_id=payment_id,
+                    Payment_method="RazorPay",
+                    amount_paid=order.order_total,
+                    status="Completed",
+                )
+                payment.save()
+                order.user = user
+                order.Payment = payment
+                order.is_ordered = True
+                order.save()
+
+                cart_items = CartItems.objects.filter(
                     user = request.user
-                    order = Order.objects.get(
-                        user = user,
-                        is_ordered=False,
-                        order_number=razorpay_order_id,
+                )
+                for item in cart_items:
+                    orderproduct = OrderProduct()
+                    orderproduct.order_id = order.id
+                    orderproduct.payment = payment
+                    orderproduct.user_id = request.user.id
+                    orderproduct.products_id = item.varient.product_id
+                    orderproduct.variation_id = item.varient_id
+                    orderproduct.quantity = item.quantity
+                    orderproduct.price = item.varient.product.price
+                    orderproduct.ordered = True
+                    orderproduct.save()
+                    print('orderproduct saved')
+                    # cart_item = CartItems.objects.get(id = item.id)
+                    # product_variation = cart_item.varient.all()
+                    orderproduct = OrderProduct.objects.get(
+                        id = orderproduct.id
                     )
+                    # orderproduct.variation.set(product_variation)
+                    orderproduct.save() 
+                    print('orderproduct saved 2')
+                    # product = product.objects.get(id = item.product_id)
+                    # product.stock = product.stock - item.quantity
+                    # product.save()
+                    product = VarientSize.objects.get(product = item.varient, size = item.size.size)
+                    product.stock = product.stock - item.quantity
+                    product.save()
+                    print('cod try block exicuted reduce the quantity of sold product')
+                    # clear the cart
+                    CartItems.objects.filter(user=request.user).delete()
+                    request.session["order_number"]=razorpay_order_id
+                    request.session["payment_id"] = payment_id
+                # send transaction successfull
+                # param = (
+                #     "order_number="
+                #     + order.order_number
+                #     + "&payment_id="
+                #     + payment.payment_id
+                # )
+                messages.success(request, "Payment Success")
+                print("payment success")
 
-                    payment = Payment(
-                        user=user,
-                        payment_id=payment_id,
-                        payment_method="RazorPay",
-                        amount_paid=order.order_total,
-                        status="Completed",
-                    )
-                    payment.save()
-                    order.user = user
-                    order.payment = payment
-                    order.is_ordered = True
-                    order.save()
+                # redirect_url = reverse('order_complete')
+                # return redirect(f'{redirect_url}?{param}')
+                return redirect('order_complete')
+                # render success page on successful caputre of payment
+            except Exception as e:
+                print(e)
+                messages.error(request,'Payment Failed')
 
-                    cart_items = CartItems.objects.filter(
-                        user = request.user
-                    )
-                    for item in cart_items:
-                        orderproduct = OrderProduct()
-                        orderproduct.order_id = order.id
-                        orderproduct.payment = payment
-                        orderproduct.user_id = request.user.id
-                        orderproduct.product_id = item.product_id
-                        orderproduct.quantity = item.quantity
-                        orderproduct.product_price = (
-                            item.varient.product.price
-                        )
-                        orderproduct.ordered = True
-                        orderproduct.save()
-
-                        cart_item = CartItems.objects.get(id = item.id)
-                        product_variation = cart_item.variations.all()
-                        orderproduct = OrderProduct.objects.get(
-                            id = orderproduct.id
-                        )
-                        orderproduct.variations.set(product_variation)
-                        orderproduct.save()
-
-                        product = product.objects.get(id = item.product_id)
-                        product.stock = product.stock - item.quantity
-                        product.save()
-
-                        CartItems.objects.filter(
-                            user = request.user
-                        ).delete()
-
-                 # send transaction successfull
-                    param = (
-                        "order_number="
-                        + order.order_number
-                        + "&payment_id="
-                        + payment.payment_id
-                    )
-                    messages.success(request, "Payment Success")
-                    print("payment success")
-
-                    redirect_url = reverse('order_complete')
-                    return redirect(f'{redirect_url}?{param}')
-                    # render success page on successful caputre of payment
-                except Exception as e:
-                    print(e)
-                    messages.error(request,'Payment Failed')
-
-                    return redirect('checkout')
-            else:
                 return redirect('checkout')
-                # if signature varification fails
-        except:
+        else:
+            print('signature varification fails')
             return redirect('checkout')
-            # if don't find the required parameters in POST data
-    else:
+            # if signature varification fails
+    except:
+        print('dont find the required parameters POST data')
         return redirect('checkout')
+        # if don't find the required parameters in POST data
+    # else:
+    #     print("don't find the required parameters in POST data")
+    #     return redirect('checkout')
         # if other than POST request is made
+
+
+def cash_on_delivery(request):
+    user = request.user
+    order_number = request.session["order_number"]
+    cart_items = CartItems.objects.filter(user = user)
+    order = Order.objects.get(
+        user = user, is_ordered=False, order_number=order_number
+    )
+    order = Order.objects.get(
+        user=user, is_ordered=False, order_number=order_number
+    )
+    print(order)
+    payment = Payment(
+        user = user,
+        Payment_id = order_number,
+        Payment_method = "Cash On Delivery",
+        amount_paid=order.order_total,
+        status="Completed",
+    )
+    payment.save()
+    order.payment = payment
+    order.is_ordered = True
+    order.save()
+
+    for item in cart_items:
+        orderproduct = OrderProduct()
+        orderproduct.order_id = order.id
+        orderproduct.payment = payment
+        orderproduct.user_id = request.user.id
+        orderproduct.products_id = item.varient.product_id
+        orderproduct.variation_id = item.varient_id
+        orderproduct.quantity = item.quantity
+        orderproduct.price = item.varient.product.price
+        # orderproduct.product_price = item.varient.product.price
+        orderproduct.ordered = True
+        orderproduct.save()
+        print('orderproduct saved')
+        # cart_item = CartItems.objects.get(id = item.id)
+        # product_variation = cart_item.varient.all()
+        orderproduct = OrderProduct.objects.get(
+            id = orderproduct.id
+        )
+        # orderproduct.variation.set(product_variation)
+        orderproduct.save() 
+        print('orderproduct saved 2')
+        # product = product.objects.get(id = item.product_id)
+        # product.stock = product.stock - item.quantity
+        # product.save()
+        product = VarientSize.objects.get(product = item.varient, size = item.size.size)
+        product.stock = product.stock - item.quantity
+        product.save()
+        print('cod try block exicuted reduce the quantity of sold product')
+
+        # clear the cart
+        CartItems.objects.filter(user=request.user).delete()
+
+    param = (
+        "order_number="
+        + order.order_number
+        + "&payment_id="
+        + payment.Payment_id
+    )
+    messages.success(request, "Payment Success")
+    request.session["payment_id"] = payment.Payment_id
+    # if "order_number" in request.session:
+    #     del request.session["order_number"]
+    # redirect_url = reverse("order_complete")
+    # return redirect(f"{redirect_url}?{param}")
+    return redirect('order_complete')
+
+def order_complete(request):
+    order_number = request.session['order_number']
+    transID = request.session['payment_id']
+
+    try:
+        order = Order.objects.get(order_number= order_number, is_ordered=True)
+        order_products = OrderProduct.objects.filter(order_id = order.id)
+        
+        subtotal = 0
+        for i in order_products:
+            subtotal += i.products.price * i.quantity
+
+        payment = Payment.objects.get(Payment_id = transID)
+        del request.session["order_number"]
+        del request.session['payment_id']
+        context = {
+            'order':order,
+            'order_products':order_products,
+            'order_number':order_number,
+            "transID": payment.Payment_id,
+            "payment": payment,
+            # "subtotal": subtotal,
+        }
+        return render(request, "user/order_complete.html", context)
+    except (Payment.DoesNotExist, Order.DoesNotExist):
+        return redirect("home")

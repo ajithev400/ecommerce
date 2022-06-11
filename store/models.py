@@ -1,24 +1,28 @@
 from django.db import models
-
+from django.db.models.aggregates import Sum
+from django.utils import timezone
 from account.models import Account
 from category.models import category,sub_category
 from django.urls import reverse
 from django.utils.text import slugify
+from django.db.models import Avg, Count
+from django.apps import apps
+
 
 class product(models.Model):
     category = models.ForeignKey(category, on_delete=models.CASCADE)
-    sub_category = models.ManyToManyField(sub_category)
     # vender =
     product_name = models.CharField(max_length=100, null=False)
     slug = models.SlugField(max_length=100,unique=True)  
     image = models.ImageField(upload_to="photos/product", null=True, blank=True)
     description = models.TextField(null=True,blank=True)
-    margin_price = models.IntegerField(default=5000)
-    price = models.IntegerField(default=5000)
+    margin_price = models.IntegerField(null=True,blank=True)
+    price = models.IntegerField(null=True,blank=True)
+    stock = models.IntegerField(null=True,blank=True)
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         ordering = ['-updated_at','-created_at']
 
@@ -26,10 +30,33 @@ class product(models.Model):
         return self.product_name
     
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.product_name)
+        self.slug = slugify(self.product_name, self.category.category_name)
         super(product, self).save(*args, **kwargs)
 
+    def averageReview(self):
+        reviews = ReviewRating.objects.filter(
+            product=self, status=True
+        ).aggregate(average=Avg("rating"))
+        avg = 0
+        if reviews["average"] is not None:
+            avg = float(reviews["average"])
+        return avg
+
+    def countReview(self):
+        reviews = ReviewRating.objects.filter(
+            product=self, status=True
+        ).aggregate(count=Count("id"))
+        count = 0
+        if reviews["count"] is not None:
+            count = int(reviews["count"])
+        return count
     
+    # def get_revenue(self, month=timezone.now().month):
+    #     orderproduct = apps.get_model("order", "OrderProduct")
+    #     order = orderproduct.objects.filter(
+    #         product=self, created_at__month=month, status="Delivered"
+    #     )
+    #     return order.values("product").annotate(revenue=Sum("price"))
 
 class VarientColor(models.Model):
     color_name = models.CharField(max_length=50,unique=True)
@@ -44,6 +71,7 @@ class Variation(models.Model):
     product = models.ForeignKey(product,on_delete=models.CASCADE, related_name="varion")
     varient_name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
+    sub_category = models.ForeignKey(sub_category, on_delete=models.CASCADE, null=True, blank=True)
     color = models.ForeignKey(VarientColor, on_delete=models.CASCADE,null=True,blank=True)
     image1 = models.ImageField(upload_to="photos/product", blank=True)
     image2 = models.ImageField(upload_to="photos/product", blank=True)
@@ -73,7 +101,8 @@ class Variation(models.Model):
     )
 
 class VarientSize(models.Model):
-    product = models.ManyToManyField(Variation)
+
+    product = models.ForeignKey(Variation, on_delete=models.CASCADE,blank=True,null=True)
     size = models.IntegerField()
     stock = models.IntegerField()
     
@@ -84,7 +113,6 @@ class ReviewRating(models.Model):
     subject = models.CharField(max_length=100, blank=True)
     review = models.TextField(max_length=500, blank=True)
     rating = models.FloatField()
-    # ip = models.CharField(max_length=20, null=True ,blank=True)
     status = models.BooleanField(default=True)
     
     created_at = models.DateTimeField(auto_now=True)

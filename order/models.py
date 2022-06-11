@@ -3,7 +3,14 @@ from django.db import models
 from account.models import Account
 from store.models import Variation,product
 
-
+STATUS1 = (
+    ("New", "New"),
+    ("Placed", "Placed"),
+    ("Shipped", "Shipped"),
+    ("Accepted", "Accepted"),
+    ("Delivered", "Delivered"),
+    ("Canceled", "Canceled"),
+)
 class Payment(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
     Payment_id = models.CharField(max_length=100)
@@ -54,18 +61,14 @@ class Order(models.Model):
     def __str__(self):
         return self.first_name
 
-class OrderProduct(models.Model):
-    STATUS = (
-        ("New", "New"),
-        ("Accepted", "Accepted"),
-        ("Delivered", "Delivered"),
-        ("Cancelled", "Cancelled"),
-    )
 
+
+class OrderProduct(models.Model):
+    
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    status = models.CharField(choices=STATUS, max_length=20, default="New")
+    status = models.CharField(choices=STATUS1, max_length=20, default="New")
     products = models.ForeignKey(product, on_delete=models.CASCADE)
     variation = models.ForeignKey(Variation, on_delete=models.CASCADE)
     quantity = models.IntegerField()

@@ -1,5 +1,9 @@
+from datetime import datetime
+from winreg import REG_QWORD
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from account.models import Account
+from order.models import Order,OrderProduct,STATUS1
 from user.models import Profile
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
@@ -10,7 +14,51 @@ from account.decorators import unauthenticated_user,allowed_user
 # Create your views here.
 
 
+@allowed_user(allowed_roles=['admin'])
 def admin_dashboard(request):
+    products = product.objects.all()
+    # total_revenue = Order.objects.all().aggregate(sum("order_total"))
+    total_order = Order.objects.filter(is_ordered=True).count()
+    total_products = product.objects.filter(is_available=True).count()
+    order_detail = OrderProduct.objects.filter(
+        status = 'New'
+    )
+
+    # status
+    new_count = OrderProduct.objects.filter(status="New").count()
+    placed_count = OrderProduct.objects.filter(status="Placed").count()
+    shipped_count = OrderProduct.objects.filter(status="Shipped").count()
+    accepted_count = OrderProduct.objects.filter(
+        status="Accepted"
+    ).count()
+    delivered_count = OrderProduct.objects.filter(
+        status="Delivered"
+    ).count()
+    cancelled_count = OrderProduct.objects.filter(
+        status="Canceled"
+    ).count()
+
+    users = Account.objects.all()
+    profile = Profile.objects.all()
+    context = {
+        'products':products,
+        'users':users,
+        'profile':profile,
+        'order_detail':order_detail,
+        'total_order':total_order,
+        'total_products':total_products,
+        "status_counter": [
+                new_count,
+                placed_count,
+                shipped_count,
+                accepted_count,
+                delivered_count,
+                cancelled_count,
+            ],
+    }
+    return render(request,'admin/admin_dashboard.html',context)
+
+def admin_dashboard_old(request):
     products = product.objects.all()[0:6]
     users = Account.objects.all()
     profile = Profile.objects.all()
@@ -21,7 +69,6 @@ def admin_dashboard(request):
         'profile':profile
     }
     return render(request,'admin/admin_dashboard.html',context)
-
 
 # ------adminLigin------
 
@@ -223,3 +270,84 @@ def customer_pickoff(request,pk):
         messages.success(request, "Done, user is Unblocked ")
     user.save()
     return redirect('customers')
+
+@allowed_user(allowed_roles=['admin'])
+def order_history(request):
+    exclude_list = [
+        "New",
+        "Accepted",
+        "Placed",
+        "Shipped",
+    ]
+    active_orders = OrderProduct.objects.all()
+    # .exclude(
+    #     status__in=exclude_list
+    # )[::-1]
+    status = STATUS1
+    context = {
+        "active_orders": active_orders,
+        "status": status,
+    }
+    return render(request,'admin/order-history.html',context)
+
+
+
+@allowed_user(allowed_roles=['admin'])
+def activeorders(request):
+    exclude_list = ["Delivered", "Canceled"]
+    active_orders = OrderProduct.objects.all().exclude(status__in=exclude_list)
+    status = STATUS1
+    context = {
+        "active_orders": active_orders,
+        "status": status,
+    }
+    return render(request, "admin/active_orders.html", context)
+
+@allowed_user(allowed_roles=['admin'])
+def order_status_change(request):
+    pk = request.POST['id']
+    status = request.POST["status"]
+    order_product = OrderProduct.objects.get(id=pk)
+    order_product.status = status
+    order_product.save()
+    return JsonResponse({"success": True})
+
+@allowed_user(allowed_roles=['admin'])
+def prouduct_repor(request):
+    products = product.objects.all()
+    orders = Order.objects.filter(is_ordered=True).order_by("-created_at")
+    
+    if request.GET.get("from"):
+        date_from = datetime.datetime.strptime(
+            request.GET.get("from"), "%Y-%m-%d"
+        )
+        date_to = datetime.datetime.strptime(
+            request.GET.get("to"), "%Y-%m-%d"
+        )
+        date_to += datetime.timedelta(days=1)
+        orders = OrderProduct.objects.filter(
+            created_at__range=[date_from, date_to]
+        )
+
+    if request.GET.get("from"):
+        date_from = datetime.datetime.strptime(
+            request.GET.get("from"), "%Y-%m-%d"
+        )
+        date_to = datetime.datetime.strptime(
+            request.GET.get("to"), "%Y-%m-%d"
+        )
+        date_to += datetime.timedelta(days=1)
+        products = product.objects.filter(
+            created_date__range=[date_from, date_to]
+        )
+
+    stock =0
+
+        
+    context =  {
+        'products': products,
+        'orders': orders,
+
+    }
+    return render(request,'admin/prouduct_report.html',context)
+

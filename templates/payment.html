@@ -64,15 +64,15 @@
                       <td> 
                           <div class="price-wrap"> 
                               {% if item.Offer_Price %}
-                              <var class="price">Rs {{ item.Offer_Price.new_price }}</var>
+                              <!-- <var class="price">Rs {{ item.Offer_Price.new_price }}</var>
                               <del  class="text-muted" style="font-size: 14px;">Rs {{item.sub_total}}</del> <br>
                              <small class="text-muted"
                                 >Rs {{item.Offer_Price.new_price}} each
                               </small>
-                              {% else %}
+                              {% else %} -->
                               <var class="price">Rs {{ item.sub_total }}</var>
                               <small class="text-muted"
-                              >Rs {{item..sub_total}} each
+                              >Rs {{item.variation.product.price}} each
                             </small>
                               {% endif %}
                           </div> <!-- price-wrap .// -->
@@ -106,7 +106,7 @@
                           {% else %}
                           <var class="price">Rs {{ cart_item.sub_total }}</var>
                           <small class="text-muted"
-                          >Rs {{cart_item.sub_total}} each
+                          >Rs {{cart_item.varient.product.price}} each
                         </small>
                           {% endif %}
                         </div> <!-- price-wrap .// -->
@@ -137,10 +137,10 @@
               <dt>Discount:</dt>
               <dd class="text-right text-success b">{{discount}}%</dd>
             </dl>
-            <dl class="dlist-align">
+            <!-- <dl class="dlist-align">
               <dt>Coupon Applied:</dt>
               <dd class="text-right text-success b">-{{amount_pay}}</dd>
-            </dl>
+            </dl> -->
             <dl class="dlist-align">
               <dt>Grand Total:</dt>
               <dd class="text-right text-dark b">
@@ -155,7 +155,7 @@
 
             <p class="text-center mb-3">
               <img
-                src="{% static './images/misc/payments.png' %}"
+                src="{% static 'images/misc/payments.png' %}"
                 height="26"
               />
             </p>
@@ -168,7 +168,7 @@
             {% elif payment_type == 'cod' %}
             <div class="btn_container">
               <!-- razorpay Button -->
-              <a href="{% url 'cod' %}" class="btn btn-outline-primary col-12">Cash on delivery</a>
+              <a href="{% url 'cash_on_delivery' %}" class="btn btn-outline-primary col-12">Cash on delivery</a>
             </div>
             {% endif %}
 
@@ -187,12 +187,13 @@
 
 <!-- razorpay -->
 <!-- Razorpay's Javascript code. -->
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
   var options = {
      
     // Enter the Key ID generated from the Dashboard
-    key: "{{rzp_test_Yqjko6NjeiK8gU}}",
+    key: "{{rzp_test_TxQpeoYAlaoExd}}",
      
     // Amount is in currency subunits.
     // Default currency is INR. Hence,

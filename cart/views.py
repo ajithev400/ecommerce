@@ -72,19 +72,6 @@ def add_cart(request):
             return redirect("cart") 
     return redirect("cart") 
 
-def update_cart(request):
-
-    if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        # print(product_id)
-        if CartItems.objects.filter(user = request.user, varient_id = product_id):
-            quantity = int(request.POST.get('quantity'))
-            # print(quantity)
-            cart = CartItems.objects.get( user = request.user, varient_id = product_id)
-            cart.quantity = quantity
-            cart.save()
-            return JsonResponse('status',"Update successfully ")
-    return redirect('home')
 
 # -----cart-----
 def cart(request, total=0, quantity=0, cart_items=None):
@@ -106,7 +93,6 @@ def cart(request, total=0, quantity=0, cart_items=None):
             quantity += cart_item.quantity
         tax = (total * 2)/100
         grand_total = total + tax
-
     except ObjectDoesNotExist:
         pass
     
@@ -119,6 +105,7 @@ def cart(request, total=0, quantity=0, cart_items=None):
     }
     
     return render(request,'cart/cart.html',context)
+
 
 def delete_cart(request,product_id):
     current_user = request.user
@@ -134,11 +121,22 @@ def delete_cart(request,product_id):
         cart_item.delete()
         return redirect('cart')
 
-def remove_cart(request, product_id):
+
+def remove_cart(request, product_id): 
     user = request.user
     if user.is_authenticated:
         variant = get_object_or_404(Variation, id = product_id)
-        cart_item = CartItems.objects.get(varient = variant ,cart = cart)
+        cart_item = CartItems.objects.get(varient = variant ,user = user)
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            cart_item.delete()
+        return redirect('cart')
+    else:
+        cart = Cart.objects.get(cart_id = _cart_id(request))
+        variant = get_object_or_404(Variation, id = product_id)
+        cart_item = CartItems.objects.get(varient = variant , Cart = cart)
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
@@ -146,6 +144,28 @@ def remove_cart(request, product_id):
             cart_item.delete()
         return redirect('cart')
 
+
+def update_cart(request,product_id):
+    user = request.user
+    if user.is_authenticated:
+        variant = get_object_or_404(Variation, id = product_id)
+        cart_item = CartItems.objects.get(varient = variant ,user = request.user)
+        if cart_item.quantity < 5:
+            cart_item.quantity += 1
+            cart_item.save()
+        else:
+            messages.error(request,'5 is the limit')
+        return redirect('cart')
+    else:
+        cart = Cart.objects.get(cart_id = _cart_id(request))
+        variant = get_object_or_404(Variation, id = product_id)
+        cart_item = CartItems.objects.get(varient = variant , Cart = cart)
+        if cart_item.quantity < 5:
+            cart_item.quantity += 1
+            cart_item.save()
+        else:
+            messages.error(request,'5 is the limit')
+        return redirect('cart')
 
 @login_required(login_url="login")
 def checkout(request, total=0, quantity=0, cart_items=None):
@@ -165,7 +185,7 @@ def checkout(request, total=0, quantity=0, cart_items=None):
             total = total = total+(
                 cart_item.varient.product.price * cart_item.quantity
             )
-        tax = (2*total)/100
+        tax = (18*total)/100
         grand_total = total+tax
     except ObjectDoesNotExist:
         pass

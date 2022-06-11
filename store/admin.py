@@ -7,6 +7,7 @@ class productAdmin(admin.ModelAdmin):
         "product_name",
         "category",
         "is_available",
+        'stock',
         "updated_at",
     )
     prepopulated_fields = {"slug": ("product_name",)}
@@ -15,6 +16,7 @@ class VariationAdmin(admin.ModelAdmin):
     list_display = (
         "product",
         "varient_name",
+        "sub_category",
         "slug",
         "color",
         "image1",

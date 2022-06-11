@@ -7,6 +7,7 @@
 
 
 {% block content %}
+{% include 'thedoo/header.html' %}
 <section class="bg-title-page p-t-50 p-b-40 flex-col-c-m" style="background-image: url('http://s3.nikecdn.com/events-platform/pre-prod/NET_Admin/header/2017-05-20_657_Banner_Blue.jpeg');">
     <h2 class="l-text2 t-center">
         wishlist
@@ -16,6 +17,15 @@
     </p>
 </section>
 <section class="bgwhite p-t-55 p-b-65">
+    {% if not wishlist %}
+    <h3 class="text-center">Your wishlist Is Empty</h3>
+
+    <br />
+    <div class="text-center">
+      <a href="{% url 'shop' %}" class="btn btn-primary">Continue Shopping</a>
+    </div>
+    {% else %}
+
     <div class="container">
         <div class="row">
             <div class="col-sm-6 col-md-4 col-lg-3 p-b-50">
@@ -56,39 +66,42 @@
                 <!-- Product -->
                 <div class="row">
                     
-                    {% for item in wishlist %}                       
-                    <div class="col-sm-12 col-md-6 col-lg-4 p-b-50">
-                        <!-- Block2 -->
-                        <div class="block2">
-                            <div class="block2-img wrap-pic-w of-hidden pos-relative block2-labelnew">
-                                <img src="{{item.varient.image1.url}}" alt="IMG-PRODUCT">
+                    {% for item in wishlist %}    
+                    <a href="{% url 'product_details' item.varient.product.slug item.varient.slug %}">
 
-                                <!-- <div class="block2-overlay trans-0-4">
-                                    <a href="#" class="block2-btn-addwishlist hov-pointer trans-0-4">
-                                        <i class="icon-wishlist icon_heart_alt" aria-hidden="true"></i>
-                                        <i class="icon-wishlist icon_heart dis-none" aria-hidden="true"></i>
+                        <div class="col-sm-12 col-md-6 col-lg-4 p-b-50">
+                            <!-- Block2 -->
+                            <div class="block2">
+                                <div class="block2-img wrap-pic-w of-hidden pos-relative block2-labelnew">
+                                    <img src="{{item.varient.image1.url}}" alt="{{item.varient}}">
+    
+                                    <!-- <div class="block2-overlay trans-0-4">
+                                        <a href="#" class="block2-btn-addwishlist hov-pointer trans-0-4">
+                                            <i class="icon-wishlist icon_heart_alt" aria-hidden="true"></i>
+                                            <i class="icon-wishlist icon_heart dis-none" aria-hidden="true"></i>
+                                        </a>
+    
+                                        <div class="block2-btn-addcart w-size1 trans-0-4">
+                                           
+                                            <button class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4">
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    </div> -->
+                                </div>
+    
+                                <div class="block2-txt p-t-20">
+                                    <a href="{% url 'product_details' item.varient.product.slug item.varient.slug %}" class="block2-name dis-block s-text3 p-b-5">
+                                        {{item.varient}}
                                     </a>
-
-                                    <div class="block2-btn-addcart w-size1 trans-0-4">
-                                       
-                                        <button class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4">
-                                            Add to Cart
-                                        </button>
-                                    </div>
-                                </div> -->
-                            </div>
-
-                            <div class="block2-txt p-t-20">
-                                <a href="product-detail.html" class="block2-name dis-block s-text3 p-b-5">
-                                    {{item.varient}}
-                                </a>
-
-                                <span class="block2-price m-text6 p-r-5">
-                                    $75.00
-                                </span>
+    
+                                    <span class="block2-price m-text6 p-r-5">
+                                        {{item.varient.product.price}}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>                   
                     {% endfor %}
                     
                         
@@ -102,6 +115,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </section>
 {% endblock content %}
     

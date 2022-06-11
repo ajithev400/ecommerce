@@ -8,7 +8,6 @@ class AddProductForm(ModelForm):
         model = product
         fields = (
             "category",
-            "sub_category",
             "product_name",
             "price",    
             "margin_price",
@@ -27,6 +26,7 @@ class AddVariationForm(ModelForm):
         fields = (
             'product',
             'varient_name',
+            "sub_category",
             'color',
             'image1',
             'image2',

@@ -21,5 +21,11 @@ urlpatterns = [
     path('activate-product/<str:pk>/',views.activate_product,name='activate_product'),
 
     path('customers/',views.customers,name='customers'),
-    path('customer_pickoff/<str:pk>',views.customer_pickoff,name='customer_pickoff'),
+    path('customer-pickoff/<str:pk>',views.customer_pickoff,name='customer_pickoff'),
+
+    path('order-history', views.order_history, name="order_history"),
+    path('activeorders', views.activeorders, name="activeorders"),
+    path('order-status-change',views.order_status_change,name="order_status_change"),
+    
+    path('prouduct-report/',views.prouduct_repor,name='prouduct_report'),
 ]   

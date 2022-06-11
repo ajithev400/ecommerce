@@ -6,8 +6,9 @@ from account.forms import RegistrationForm
 from account.models import Account
 from account.otp import send_otp,verify_otp
 from django.contrib.auth import authenticate,login,logout
+from order.models import Order, OrderProduct
 from user.forms import AddAdddressForm,UserProfileForm
-from user.models import Address,Profile, Roles
+from user.models import Address,Profile
 from store.models import Variation,product,VarientSize
 from cart.models import Cart, CartItems
 from cart.views import _cart_id
@@ -16,7 +17,7 @@ from account.decorators import unauthenticated_user
 from django.contrib.auth.decorators import login_required
 
 def home(request):
-    variations = Variation.objects.filter(is_available=True)
+    variations = Variation.objects.filter(is_available=True)[:10]
     categories = category.objects.all()
     products = product.objects.all()
     context = {
@@ -137,26 +138,31 @@ def cart_list(request):
 
 
 def product_details(request,product_slug,variant_slug):
+    user = request.user
     newproducts = product.objects.all()
     
     try:
         single_variant = Variation.objects.get(
             product__slug =product_slug ,slug = variant_slug
         )
-        in_cart = CartItems.objects.filter(
-            varient = single_variant, Cart__cart_id=_cart_id(request)
-        ).exists()
+        if user.is_authenticated:
+            in_cart = CartItems.objects.filter(
+            varient = single_variant, user= user
+            ).exists()
+        else:
+            in_cart = CartItems.objects.filter(
+                varient = single_variant, Cart__cart_id=_cart_id(request)
+            ).exists()
         # Cart__cart_id=_cart_id(request),
         size = VarientSize.objects.filter(
             product = single_variant
         )
-        print(in_cart) 
+        
         
     except Exception as e:
         raise e
     print(single_variant)
     variants = Variation.objects.filter(product = single_variant.product.id)
-    print(variants)
     context = {
         'single_variant':single_variant,
         'in_cart':in_cart,
@@ -208,3 +214,33 @@ def user_profile(request):
         'user_profile':user_profile
     }
     return render( request, 'user/profile.html',context)
+
+
+@login_required(login_url="login")
+def user_orders(request):
+    user = request.user
+    orders = OrderProduct.objects.filter(
+        user = user, ordered=True
+    ).order_by("-created_at")
+    context = {
+        'orders':orders
+    }
+    return render(request,'user/my_orders.html',context)
+
+
+@login_required(login_url="userlogin")
+def order_detail(request, order_id):
+    user = request.user
+    order_detail = OrderProduct.objects.filter(
+        order__order_number=order_id
+    )
+    order = Order.objects.get(user = user, order_number=order_id)
+    subtotal = 0
+    for i in order_detail:
+        subtotal = subtotal + i.price * i.quantity
+    context = {
+        "order_detail": order_detail,
+        "order": order,
+        "subtotal": subtotal,
+    }
+    return render(request,'user/order_detail.html',context)

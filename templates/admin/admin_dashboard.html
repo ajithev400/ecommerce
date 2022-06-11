@@ -150,26 +150,28 @@
 
                   <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                     <div class="d-flex align-items-center">
-                      <button class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-up"></i></button>
                       <div class="d-flex flex-column">
                         <h6 class="mb-1 text-dark text-sm">{{user}}</h6>
                         <span class="text-xs">Accout created at: {{user.date_joined}}</span>
                       </div>
                     </div>
                     
-                    {% if user.is_rejected %}
+                    {% if user.is_rejected == False%}
                     <div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">
-                      Blocked
+                      Active
                     </div>
                     {% else %}
                     <div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">
-                      Active
+                      Blocked
                     </div>
                     {% endif %}
                       
                     
                   </li>
                   {% endfor %}
+                  
+
+                    
                     
                 </ul>
               </div>
@@ -189,39 +191,53 @@
             <div class="table-responsive">
               <table class="table align-items-center ">
                 <tbody>
-
+                  
+                  {% for order in order_detail %}
                   <tr>
                     <td class="w-30">
                       <div class="d-flex px-2 py-1 align-items-center">
-                        <div>
+                        <!-- <div>
                           <img src="{% static 'admin/assets/img/icons/flags/US.png' %}" alt="Country flag">
-                        </div>
+                        </div> -->
                         <div class="ms-4">
-                          <p class="text-xs font-weight-bold mb-0">Country:</p>
-                          <h6 class="text-sm mb-0">United States</h6>
+                          <p class="text-xs font-weight-bold mb-0">Order Number:</p>
+                          <h6 class="text-sm mb-0">{{order.order.order_number}}</h6>
                         </div>
                       </div>
                     </td>
                     <td>
                       <div class="text-center">
-                        <p class="text-xs font-weight-bold mb-0">Sales:</p>
-                        <h6 class="text-sm mb-0">2500</h6>
+                        <p class="text-xs font-weight-bold mb-0">Product:</p>
+                        <h6 class="text-sm mb-0">{{order.products}}</h6>
                       </div>
                     </td>
                     <td>
                       <div class="text-center">
-                        <p class="text-xs font-weight-bold mb-0">Value:</p>
-                        <h6 class="text-sm mb-0">$230,900</h6>
+                        <p class="text-xs font-weight-bold mb-0">variant:</p>
+                        <h6 class="text-sm mb-0">{{order.variation}}</h6>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="text-center">
+                        <p class="text-xs font-weight-bold mb-0">Quantity:</p>
+                        <h6 class="text-sm mb-0">{{order.quantity}}</h6>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="text-center">
+                        <p class="text-xs font-weight-bold mb-0">Amount:</p>
+                        <h6 class="text-sm mb-0">{{order.price}}</h6>
                       </div>
                     </td>
                     <td class="align-middle text-sm">
                       <div class="col text-center">
-                        <p class="text-xs font-weight-bold mb-0">Bounce:</p>
-                        <h6 class="text-sm mb-0">29.9%</h6>
+                        <div class="d-flex">
+                          <a href="#" class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></a>
+                        </div>
                       </div>
                     </td>
                   </tr>
-
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
@@ -231,6 +247,7 @@
           <div class="card">
             <div class="card-header pb-0 p-3">
               <h6 class="mb-0">Our Products</h6>
+              <p>Number of products: {{total_products}}</p>
             </div>
             <div class="card-body p-3">
               <ul class="list-group">
