@@ -1,6 +1,8 @@
 from datetime import datetime
+import string
+from urllib import response
 from winreg import REG_QWORD
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from account.models import Account
 from order.models import Order,OrderProduct,STATUS1
@@ -10,6 +12,14 @@ from django.contrib import messages
 from store.models import product,Variation,VarientColor
 from store.forms import AddProductForm,AddVariationForm
 from account.decorators import unauthenticated_user,allowed_user
+from django.template.loader import render_to_string
+import tempfile
+import csv
+# import os
+
+# os.add_dll_directory(r"C:\Program Files\GTK3-Runtime Win64\bin")
+
+# from weasyprint import HTML
 
 # Create your views here.
 
@@ -313,10 +323,10 @@ def order_status_change(request):
     return JsonResponse({"success": True})
 
 @allowed_user(allowed_roles=['admin'])
-def prouduct_repor(request):
+def prouduct_report(request):
     products = product.objects.all()
-    orders = Order.objects.filter(is_ordered=True).order_by("-created_at")
-    
+    orders = OrderProduct.objects.filter(ordered=True).order_by("-created_at")
+
     if request.GET.get("from"):
         date_from = datetime.datetime.strptime(
             request.GET.get("from"), "%Y-%m-%d"
@@ -341,13 +351,66 @@ def prouduct_repor(request):
             created_date__range=[date_from, date_to]
         )
 
-    stock =0
-
-        
-    context =  {
-        'products': products,
-        'orders': orders,
-
+    context = {
+        "products": products,
+        "orders": orders,
     }
-    return render(request,'admin/prouduct_report.html',context)
+    return render(request, "admin/prouduct_report.html", context)
 
+def order_export_pdf(request):
+    pass
+    # response = HttpResponse(content_type="application/pdf")
+    # response[
+    #     "Content-Disposition"
+    # ] = "inline; attachement; filename=orders_Report"+\
+    #     str(datetime.datetime.now())+".pdf"
+
+    # response["Content-Transfer-Encoding"] = "binary"
+    # orders = OrderProduct.objects.filter(ordered=True).order_by("-created_at")
+    # html_string = render_to_string(
+    #     "admin/orders_pdf_output.html", {"orders": orders, "total": 0}
+    # )
+    # # html = HTML(string = html_string)
+    # result = html.write_pdf()
+    # with tempfile.NamedTemporaryFile(delete=True) as output:
+    #     output.write(result)
+    #     output.flush()
+    #     output = open(output.name,'rb')
+    #     response.write(output.read())
+
+    # return response
+
+def orders_export_csv(request):
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename=orders.csv"
+
+    writer = csv.writer(response)
+    orders = OrderProduct.objects.filter(ordered=True).order_by("-created_at")
+
+    writer.writerow(
+        [
+            "Order Number",
+            "Customer",
+            "Product",
+            "Amount",
+            # "Payment",
+            "Qty",
+            "Status",
+            "Date",
+        ]
+    )
+
+    for order in orders:
+        writer.writerow(
+            [
+                order.order.order_number,
+                order.user.full_name(),
+                order.products,
+                order.price,
+                # order.payment.Payment_method,
+                order.quantity,
+                order.status,
+                order.updated_at,
+            ]
+        )
+    return response

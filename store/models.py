@@ -33,23 +33,23 @@ class product(models.Model):
         self.slug = slugify(self.product_name, self.category.category_name)
         super(product, self).save(*args, **kwargs)
 
-    def averageReview(self):
-        reviews = ReviewRating.objects.filter(
-            product=self, status=True
-        ).aggregate(average=Avg("rating"))
-        avg = 0
-        if reviews["average"] is not None:
-            avg = float(reviews["average"])
-        return avg
+    # def averageReview(self):
+    #     reviews = ReviewRating.objects.filter(
+    #         product=self, status=True
+    #     ).aggregate(average=Avg("rating"))
+    #     avg = 0
+    #     if reviews["average"] is not None:
+    #         avg = float(reviews["average"])
+    #     return avg
 
-    def countReview(self):
-        reviews = ReviewRating.objects.filter(
-            product=self, status=True
-        ).aggregate(count=Count("id"))
-        count = 0
-        if reviews["count"] is not None:
-            count = int(reviews["count"])
-        return count
+    # def countReview(self):
+    #     reviews = ReviewRating.objects.filter(
+    #         product=self, status=True
+    #     ).aggregate(count=Count("id"))
+    #     count = 0
+    #     if reviews["count"] is not None:
+    #         count = int(reviews["count"])
+    #     return count
     
     # def get_revenue(self, month=timezone.now().month):
     #     orderproduct = apps.get_model("order", "OrderProduct")

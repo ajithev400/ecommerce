@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gy*zdyaq=_^-yu0^k8h)qs8%q=(=3h#e5c!3g0d=ro41s5fj$d'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -58,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'thedoo.urls'
@@ -75,6 +78,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processors.counter',
             ],
         },
     },
@@ -88,12 +92,12 @@ WSGI_APPLICATION = 'thedoo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ecom_db',
-        'USER': 'ajith',
-        'PASSWORD': 'probook',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': config('ENGINE'),
+        'NAME': config('NAME'),
+        'USER': config('USER'),
+        'PASSWORD': config('PASSWORD'),
+        'HOST': config('HOST', default='localhost'),
+        'PORT': config('PORT', cast=int),
     }
 }
 
@@ -139,15 +143,18 @@ STATICFILES_DIRS = [
 
 MEDIA_URL ='/media/'
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-RAZOR_KEY_ID ='rzp_test_TxQpeoYAlaoExd'
-RAZOR_KEY_SECRET = 'oZT8rkCHhQIVafkP24miJhkQ'
+RAZOR_KEY_ID = config('RAZOR_KEY_ID')
+RAZOR_KEY_SECRET = config('RAZOR_KEY_SECRET')
 
-ACCOUNT_SID = 'ACfd3ce023341dab8be083c1f7472aed21'
-AUTH_TOKEN = '5bfbd1b006c4563d2c06b84479dca00f'
-SERVICES_ID = 'VA0562597983cc621635da88032031168a'  
+ACCOUNT_SID = config('ACCOUNT_SID')
+AUTH_TOKEN = config('AUTH_TOKEN')
+SERVICES_ID = config('SERVICES_ID')

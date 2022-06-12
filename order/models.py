@@ -73,7 +73,7 @@ class OrderProduct(models.Model):
     variation = models.ForeignKey(Variation, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.FloatField()
-    test = models.CharField(max_length=100, blank=True)
+    text = models.CharField(max_length=100, blank=True)
     ordered = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

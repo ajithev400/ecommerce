@@ -61,7 +61,7 @@
 							<td>{{product.product_name}}</td>
 							<!-- <td>{{product.brand_name}}</td> -->
 							<td>{{product.category}}</td>
-							<td></td>
+							<td>{{product.averageReview}}</td>
                             <td>₹ {{product.price}}</td>
                             <td>{{product.stock}}</td>
 						</tr>
@@ -182,7 +182,7 @@
 						</div>
 					</form>
 					<div class="d-flex justify-content-end mb-4 px-10">
-						<a href=" 'orders_export_csv" class="btn btn-sm btn-success mr-2">Export
+						<a href="{% url 'order_export_csv' %}" class="btn btn-sm btn-success mr-2">Export
 							as CSV</a>
 						<a href=" 'orders_export_pdf" class="btn btn-sm btn-danger ms-1">Export
 							as PDF</a>
@@ -211,7 +211,7 @@
 								<td>{{order.user.full_name}}</td>
 								<td>{{order.products.product_name}}</td>
 								<td>{{order.price}}</td>
-								<td>{{order.Payment.Payment_method}}</td>
+								<td>{{order.payment.Payment_method}}</td>
 								<td>{{order.quantity}}</td>
 								<td>{{order.status}}</td>
 								<td>{{order.updated_at}}</td>

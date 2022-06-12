@@ -70,6 +70,7 @@ def add_cart(request):
             cart_item.save()
             
             return redirect("cart") 
+            
     return redirect("cart") 
 
 

@@ -27,5 +27,8 @@ urlpatterns = [
     path('activeorders', views.activeorders, name="activeorders"),
     path('order-status-change',views.order_status_change,name="order_status_change"),
     
-    path('prouduct-report/',views.prouduct_repor,name='prouduct_report'),
+    path('prouduct-report/',views.prouduct_report,name='prouduct_report'),
+
+    path('order-export-csv',views.orders_export_csv,name='order_export_csv'),
+    path('order-export-pdf',views.order_export_pdf,name='order_export_pdf'),
 ]   
