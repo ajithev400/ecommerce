@@ -204,6 +204,7 @@ def checkout(request, total=0, quantity=0, cart_items=None):
     }
     return render(request,'user/checkout.html',context)
 
+@login_required(login_url="login")
 def add_wishlist(request):
     if request.user.is_authenticated:
         if request.POST.get('action')=='POST':
@@ -223,7 +224,7 @@ def add_wishlist(request):
     return redirect('home')
 
 
-
+@login_required(login_url="login")
 def wishlist(request):
     wishlist = Wishlist.objects.filter(user = request.user)
     context = {
@@ -231,7 +232,7 @@ def wishlist(request):
     }
     return render(request,'user/wishlist.html',context)
 
-
+@login_required(login_url="login")
 def delete_wi(request,product_id):
     user = request.user
     product = product.objects.get(id = product_id)

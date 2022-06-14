@@ -8,7 +8,7 @@
 <section class="section-conten ">  
     <div class="container">
         <div class="row">
-            
+            {% include 'user/user_base.html' %}
         <main class="col-md-9">
             <article class="card">
             <header class="card-header">
@@ -47,15 +47,15 @@
                                 <td>{{order.created_at}}</td>
                               
                                 {% if order.status == 'New' %}
-                                <td><a href="" class="btn btn-sm btn-outline-danger" onclick="cancelOrder()">Cancel</a></td>
+                                <td><a href="{%  url 'cancel_order' order.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel</a></td>
                                 {% elif order.status == 'Canceled'  %}
                                 <td><button class="btn btn-sm btn-warning" disabled>Cancelled</button></td>
                                 {% elif order.status == 'Placed'%}
-                                <td><a href="" class="btn btn-sm btn-outline-primary"  onclick="cancelOrder()">Placed</a>
+                                <td><a href="{%  url 'cancel_order' order.id %}" class="btn btn-sm btn-outline-primary"  onclick="return confirm('Are you sure you want to cancel this order?')">Placed</a>
                                 {% elif order.status == 'Shipped'%}
-                                <td><a href="" class="btn btn-sm btn-outline-info"  onclick="cancelOrder()">Shipped</a>
+                                <td><a href="{%  url 'cancel_order' order.id %}" class="btn btn-sm btn-outline-info"  onclick="return confirm('Are you sure you want to cancel this order?')">Shipped</a>
                                 {% elif order.status == 'Accepted'%}
-                                <td><a href="" class="btn btn-sm btn-outline-dark"  onclick="cancelOrder()">Accepted</a>
+                                <td><a href="{%  url 'cancel_order' order.id %}" class="btn btn-sm btn-outline-dark"  onclick="return confirm('Are you sure you want to cancel this order?')">Accepted</a>
                                 {% elif order.status == 'Delivered'%}
                                 <td><button class="btn btn-sm btn-success" disabled>Delivered</button>
                                 {% endif %}

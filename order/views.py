@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 razorpay_client = razorpay.Client(
@@ -70,7 +71,7 @@ def payment(request):
 
 
 
-
+@login_required(login_url="login")
 def place_order(request, total=0, quantity=0):
     user = request.user
 
@@ -270,7 +271,7 @@ def paymenthandler(request, total=0, quantity=0):
     #     return redirect('checkout')
         # if other than POST request is made
 
-
+@login_required(login_url="login")
 def cash_on_delivery(request):
     user = request.user
     order_number = request.session["order_number"]

@@ -21,14 +21,15 @@ urlpatterns = [
     path('activate-product/<str:pk>/',views.activate_product,name='activate_product'),
 
     path('customers/',views.customers,name='customers'),
-    path('customer-pickoff/<str:pk>',views.customer_pickoff,name='customer_pickoff'),
+    path('customer-pickoff/<str:pk>/',views.customer_pickoff,name='customer_pickoff'),
 
-    path('order-history', views.order_history, name="order_history"),
-    path('activeorders', views.activeorders, name="activeorders"),
-    path('order-status-change',views.order_status_change,name="order_status_change"),
+    path('order-details/<str:pk>/',views.order_details,name='order_details'),
+    path('order-history/', views.order_history, name="order_history"),
+    path('activeorders/', views.activeorders, name="activeorders"),
+    path('order-status-change/',views.order_status_change,name="order_status_change"),
     
     path('prouduct-report/',views.prouduct_report,name='prouduct_report'),
 
-    path('order-export-csv',views.orders_export_csv,name='order_export_csv'),
-    path('order-export-pdf',views.order_export_pdf,name='order_export_pdf'),
+    path('order-export-csv/',views.orders_export_csv,name='order_export_csv'),
+    path('order-export-pdf/',views.order_export_pdf,name='order_export_pdf'),
 ]   

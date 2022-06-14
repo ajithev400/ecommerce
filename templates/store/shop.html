@@ -162,7 +162,7 @@
 						</div>
 
 						<span class="s-text8 p-t-5 p-b-5">
-							Showing 1–12 of 16 results
+							Showing 1–12 of {{product_count}} results
 						</span>
 					</div>
 
@@ -200,10 +200,26 @@
 					</div>
 
 					<!-- Pagination -->
-						<!-- <div class="pagination flex-m flex-w p-t-26">
-							<a href="#" class="item-pagination flex-c-m trans-0-4 active-pagination">1</a>
-							<a href="#" class="item-pagination flex-c-m trans-0-4">2</a>
-						</div> -->
+						<div class="pagination flex-m flex-w p-t-26">
+							
+							{% if products.has_other_pages %}
+							
+							{% for i in products.paginator.page_range %}
+								
+								{% if products.number == i %}									
+								<a href="#" class="item-pagination flex-c-m trans-0-4 active-pagination">{{i}}</a>
+								{% else %}
+								<a href="?page={{i}}" class="item-pagination flex-c-m trans-0-4">{{i}}</a>
+								{% endif %}
+									
+							{% endfor %}
+								
+							<!-- <a href="#" class="item-pagination flex-c-m trans-0-4">2</a> -->
+							{% else %}
+
+							{% endif %}
+								
+						</div>
 				</div>
 			</div>
 		</div>

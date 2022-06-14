@@ -1,0 +1,51 @@
+<aside class="col-md-2 col-lg-2">
+    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if '/dashboard' == request.path %}active{% endif %} " href="{% url 'dashboard' %}"
+                role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/user_order' == request.path %}active{% endif %}" href="{% url 'user_orders' %}"
+                role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/user_address' == request.path %}active{% endif %}"
+                href="{% url 'user_address' %}" role="tab" aria-controls="tab-address"
+                aria-selected="false">Adresses</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/user_profile' == request.path %}active{% endif %}"
+                href="{% url 'user_profile' %}" role="tab" aria-controls="tab-account" aria-selected="false">My
+                Profile</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/change_password' == request.path %}active{% endif %}"
+                href="" role="tab" aria-controls="tab-account" aria-selected="false">Change
+                Password</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" onclick="singout(event)" href="{% url 'signout' %}">Sign Out</a>
+        </li>
+    </ul>
+</aside><!-- End .col-lg-3 -->
+<!-- <script>
+    function signout(event) {
+        event.preventDefault();
+        var linkURL = event.currentTarget.href;
+        Swal.fire({
+            title: "Do you want to Signout ? ",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: 'primary',
+            cancelButtonColor: 'success',
+            confirmButtonText: 'Yes, Cancel !'
+        })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    window.location = linkURL;
+                } else {
+                    return false;
+                }
+            });
+    }
+</script> -->

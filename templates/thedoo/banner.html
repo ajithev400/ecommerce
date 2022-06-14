@@ -19,8 +19,8 @@
             <div class="col-sm-10 col-md-4 p-b-30 m-l-r-auto">
                 <!-- Block3 -->
                 <div class="block3">
-                    <a href="{% url 'product_details' variant.product.slug variant.slug %}" class="block3-img dis-block hov-img-zoom">
-                        <img src="{{variant.product.image.url}}" alt="IMG-BLOG">
+                    <a href="{{variation.get_url}}" class="block3-img dis-block hov-img-zoom">
+                        <img src="{{variant.image1.url}}" alt="IMG-BLOG">
                     </a>
 
                     <div class="block3-txt p-t-14">

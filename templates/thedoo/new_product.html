@@ -31,7 +31,7 @@
 							</div>
 
 							<div class="block2-txt p-t-20">
-								<a href="{% url 'product_details' variation.product.slug  variation.slug %}" class="block2-name dis-block s-text3 p-b-5">
+								<a href="{{ variation.get_url }}" class="block2-name dis-block s-text3 p-b-5">
 									{{variation}}
 								</a>
 

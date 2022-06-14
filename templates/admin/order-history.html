@@ -34,7 +34,7 @@
                             <td>{{active_order.quantity}}</td>
                             <td>{{active_order.created_at}}</td>
                             <td>{{active_order.status}}</td>
-                            <td><a href="#" class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></a></td>
+                            <td><a href="{% url 'order_details' active_order.id %}" class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></a></td>
                         </tr>   
                         {% endfor %}
                     </tbody>

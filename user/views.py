@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 def home(request):
     variations = Variation.objects.filter(is_available=True)[:10]
     categories = category.objects.all()
-    products = product.objects.all()
+    products = product.objects.filter(is_available=True)
     context = {
         'variations':variations,
         'products':products,
@@ -131,7 +131,19 @@ def logout_user(request):
     logout(request)
     return redirect('login')
 
-
+@login_required(login_url='login')
+def dashboard(request):
+    orders = OrderProduct.objects.filter(user = request.user).order_by(
+        'updated_at'
+    )
+    total_orders = orders.count()
+    user_profile = Profile.objects.get(user = request.user.id)
+    context = {
+        'total_orders':total_orders,
+        'user_profile':user_profile
+    }
+    return render(request,'user/dashboard.html',context)
+    
 def cart_list(request):
 
     return render(request,'cart/cart.html')
@@ -215,7 +227,7 @@ def user_profile(request):
     }
     return render( request, 'user/profile.html',context)
 
-
+# -----list of user order and status----
 @login_required(login_url="login")
 def user_orders(request):
     user = request.user
@@ -228,13 +240,14 @@ def user_orders(request):
     return render(request,'user/my_orders.html',context)
 
 
-@login_required(login_url="userlogin")
-def order_detail(request, order_id):
+# ----user order details----
+@login_required(login_url="login")
+def order_detail(request, pk):
     user = request.user
     order_detail = OrderProduct.objects.filter(
-        order__order_number=order_id
+        order__order_number= pk
     )
-    order = Order.objects.get(user = user, order_number=order_id)
+    order = Order.objects.get(user = user, order_number = pk)
     subtotal = 0
     for i in order_detail:
         subtotal = subtotal + i.price * i.quantity
@@ -244,3 +257,16 @@ def order_detail(request, order_id):
         "subtotal": subtotal,
     }
     return render(request,'user/order_detail.html',context)
+
+# ---cancle-order---
+@login_required(login_url="login")
+def cancel_order(request, pk):
+
+    order_product = OrderProduct.objects.get(pk = pk)
+    order_product.status = 'Canceled'
+    order_product.save()
+    product_id = order_product.products.id
+
+    item = product.objects.get(pk = product_id)
+    item.stock += order_product.quantity
+    return redirect('user_orders')

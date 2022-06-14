@@ -57,26 +57,14 @@ def admin_dashboard(request):
         'order_detail':order_detail,
         'total_order':total_order,
         'total_products':total_products,
-        "status_counter": [
+        "status_counter": {
                 new_count,
                 placed_count,
                 shipped_count,
                 accepted_count,
                 delivered_count,
                 cancelled_count,
-            ],
-    }
-    return render(request,'admin/admin_dashboard.html',context)
-
-def admin_dashboard_old(request):
-    products = product.objects.all()[0:6]
-    users = Account.objects.all()
-    profile = Profile.objects.all()
-
-    context = {
-        'products':products,
-        'users':users,
-        'profile':profile
+        },
     }
     return render(request,'admin/admin_dashboard.html',context)
 
@@ -158,7 +146,10 @@ def add_verient(request,pk):
             messages.info(request,"Somthing went wrong , Try again.")
             return redirect('list_product')
     form = AddVariationForm()
-    context = {'form':form}
+    context = {
+        'form':form,
+
+    }
 
     return render(request,'store/add_variant.html',context)
 
@@ -171,6 +162,7 @@ def list_product(request):
         'products': products
     }
     return render(request,'store/list_product.html',context)
+
 
 @allowed_user(allowed_roles=['admin'])
 def view_product(request,pk):
@@ -314,6 +306,16 @@ def activeorders(request):
     return render(request, "admin/active_orders.html", context)
 
 @allowed_user(allowed_roles=['admin'])
+def order_details(request,pk):
+    order = OrderProduct.objects.get(id = pk)
+    
+    context = {
+        'order':order
+    }
+    return render(request,'admin/order_detail.html',context)
+
+
+@allowed_user(allowed_roles=['admin'])
 def order_status_change(request):
     pk = request.POST['id']
     status = request.POST["status"]
@@ -379,7 +381,7 @@ def order_export_pdf(request):
     #     response.write(output.read())
 
     # return response
-
+@allowed_user(allowed_roles=['admin'])
 def orders_export_csv(request):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=orders.csv"
