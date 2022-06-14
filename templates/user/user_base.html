@@ -9,6 +9,11 @@
                 role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
         </li>
         <li class="nav-item">
+            <a class="nav-link {% if '/user_profile' == request.path %}active{% endif %}"
+                href="{% url 'wishlist' %}" role="tab" aria-controls="tab-account" aria-selected="false">My
+                Wishlist</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link {% if '/user_address' == request.path %}active{% endif %}"
                 href="{% url 'user_address' %}" role="tab" aria-controls="tab-address"
                 aria-selected="false">Adresses</a>
