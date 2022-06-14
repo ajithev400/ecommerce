@@ -1,0 +1,1 @@
+web: gunicorn thedoo.wsgi --log-file -
