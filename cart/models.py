@@ -1,4 +1,3 @@
-from turtle import ondrag
 from django.db import models
 from account.models import Account
 from store.models import Variation,product,VarientSize
