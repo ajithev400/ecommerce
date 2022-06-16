@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 
->>>>>>> 0a62107688dd5a433c87f28cd8c168da06c921af
 from django.db import models
 from account.models import Account
 from store.models import Variation,product,VarientSize

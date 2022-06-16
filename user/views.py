@@ -262,7 +262,7 @@ def order_detail(request, pk):
 @login_required(login_url="login")
 def cancel_order(request, pk):
 
-    order_product = OrderProduct.objects.get(pk = pk)
+    order_product = OrderProduct.objects.get(id = pk)
     order_product.status = 'Canceled'
     order_product.save()
     product_id = order_product.products.id
