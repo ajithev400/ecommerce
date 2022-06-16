@@ -268,5 +268,5 @@ def cancel_order(request, pk):
     product_id = order_product.products.id
 
     item = product.objects.get(pk = product_id)
-    item.stock += order_product.quantity
+    item.stock = item.stock+order_product.quantity
     return redirect('user_orders')
