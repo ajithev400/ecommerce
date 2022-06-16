@@ -1,7 +1,6 @@
 from datetime import datetime
 import string
 from urllib import response
-from winreg import REG_QWORD
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from account.models import Account

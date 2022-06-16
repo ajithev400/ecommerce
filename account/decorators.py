@@ -1,4 +1,4 @@
-from tkinter.messagebox import NO
+
 from tokenize import group
 from django.http import HttpResponse
 from django.shortcuts import redirect
