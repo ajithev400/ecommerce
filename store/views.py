@@ -12,7 +12,7 @@ def shop(request):
         Q(product__category__category_name__icontains=cate) |
         Q(sub_category__sub_category_name__icontains=cate)
     )
-    paginator = Paginator(products,3)
+    paginator = Paginator(products,6)
     page = request.GET.get('page')
     paged_products = paginator.get_page(page)
     product_count = products.count()
