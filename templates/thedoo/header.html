@@ -106,7 +106,7 @@
     <!-- Header Mobile -->
     <div class="wrap_header_mobile">
         <!-- Logo moblie -->
-        <a href="index.html" class="logo-mobile">
+        <a href="{% url 'home' %}" class="logo-mobile">
             <img src="{% static 'thedoo/images/icons/logo.png' %}" alt="IMG-LOGO">
         </a>
 
@@ -114,7 +114,7 @@
         <div class="btn-show-menu">
             <!-- Header Icon mobile -->
             <div class="header-icons-mobile">
-                <a href="#" class="header-wrapicon1 dis-block">
+                <a href="{% url 'user_profile' %}" class="header-wrapicon1 dis-block">
                     <img src="{% static 'thedoo/images/icons/icon-header-01.png' %}" class="header-icon1" alt="ICON">
                 </a>
 
@@ -122,7 +122,7 @@
 
                 <div class="header-wrapicon2">
                     <img src="{% static 'thedoo/images/icons/icon-header-02.png' %}" class="header-icon1 js-show-header-dropdown" alt="ICON">
-                    <span class="header-icons-noti">0</span>
+                    <span class="header-icons-noti">{{count}}</span>
 
                     <!-- Header cart noti -->
                     <div class="header-cart header-dropdown">
@@ -190,7 +190,7 @@
 
                             <div class="header-cart-wrapbtn">
                                 <!-- Button -->
-                                <a href="#" class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
+                                <a href="{% url 'cart' %}" class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
                                     Check Out
                                 </a>
                             </div>
@@ -243,7 +243,7 @@
                 </li>
 
                 <li class="item-menu-mobile">
-                    <a href="index.html">Home</a>
+                    <a href="{% url 'home' %}">Home</a>
                     <ul class="sub-menu">
                         <li><a href="index.html">Homepage V1</a></li>
                         <li><a href="home-02.html">Homepage V2</a></li>
@@ -253,27 +253,21 @@
                 </li>
 
                 <li class="item-menu-mobile">
-                    <a href="product.html">Shop</a>
+                    <a href="{% url 'shop' %}">Shop</a>
                 </li>
 
                 <li class="item-menu-mobile">
-                    <a href="product.html">Sale</a>
+                    <a href="{% url 'shop' %}">Sale</a>
+                </li>
+
+                
+
+                <li class="item-menu-mobile">
+                    <a href="#">About</a>
                 </li>
 
                 <li class="item-menu-mobile">
-                    <a href="cart.html">Features</a>
-                </li>
-
-                <li class="item-menu-mobile">
-                    <a href="blog.html">Blog</a>
-                </li>
-
-                <li class="item-menu-mobile">
-                    <a href="about.html">About</a>
-                </li>
-
-                <li class="item-menu-mobile">
-                    <a href="contact.html">Contact</a>
+                    <a href="#">Contact</a>
                 </li>
             </ul>
         </nav>
