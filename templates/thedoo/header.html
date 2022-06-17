@@ -25,6 +25,8 @@
                 <span class="topbar-email">
                     {{user.first_name}}
                 </span>
+                {% else %}
+                <a href="{% url 'login' %}"><span class="topbar-email">login</span></a>
                 {% endif %}
 
                 <div class="topbar-language rs1-select2">
@@ -269,6 +271,17 @@
                 <li class="item-menu-mobile">
                     <a href="#">Contact</a>
                 </li>
+                
+                {% if request.user.is_authenticated %}
+                <li class="item-menu-mobile">
+                    <a href="{% url 'user_profile' %}">{{user.first_name}}</a>
+                </li>
+                {% else %}    
+                <li class="item-menu-mobile">
+                    <a href="{% url 'login' %}">Login</a>
+                </li>
+                {% endif %}
+                    
             </ul>
         </nav>
     </div>
