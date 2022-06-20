@@ -156,6 +156,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
+STATIC_ROOT = '/var/www/static'
+
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
