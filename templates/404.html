@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>page 404 - error</title>
+		<link rel="icon" type="image/png" href="" />
+		<!-- link Bs -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/	bootstrap.min.css" integrity="	sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+        <!-- link CSS -->
+        <link rel="stylesheet" href="{% static '404\404.css' %}"/>
+	</head>
+	<body>
+<!-- Header -->
+		<header>
+			<div class="brand">
+				<a href="#"><img src=""></a>
+			</div>
+		</header>
+<!-- Main -->
+		<main class="content container-fluid">
+			<div id="bloc404">
+				<div class=" row d-flex justify-content-center align-items-center">
+					<p class="four">4</p>
+			<!-- Gif  ↓ -->
+					<div class="travolta mx-5 d-flex justify-content-center align-items-center">
+						<img src="https://orig00.deviantart.net/4872/f/2016/174/d/0/travalo_by_greenanimator-da7f5zc.gif" class="gif" alt="Travolta is lost" title="Elle est où ma page?!">
+					</div>
+					<p class="four">4</p>	
+				</div>
+				<p class="oops mt-4">Oops! We can't find the page you are looking for! Or maybe you just got lost!
+				</p>
+			</div>
+		</main>
+<!-- JS to keep ratio-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+	</body>
+</html>
+<script>
+    // to keep the ratio on .travolta
+
+var largeur = $('.travolta').width();
+
+$('.travolta').css('height', largeur);
+
+$(window).resize(function(){
+
+largeur = $('.travolta').width();
+
+$('.travolta').css({'height': largeur});
+
+});
+</script>

@@ -270,3 +270,6 @@ def cancel_order(request, pk):
     item = product.objects.get(pk = product_id)
     item.stock = item.stock+order_product.quantity
     return redirect('user_orders')
+
+def error_404(request,exception):
+    return render(request,'404.html')
