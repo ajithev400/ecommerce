@@ -126,6 +126,10 @@ def register_otp(request):
             
     return render(request,'otp_validation.html')
 
+def resend_otp(request):
+    mobile_number = request.session["mobile_number"]
+    send_otp(mobile_number)
+    return redirect('register_otp')
 
 def logout_user(request):
     logout(request)

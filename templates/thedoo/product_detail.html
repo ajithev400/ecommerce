@@ -75,7 +75,7 @@
 						
 					<li class="flex-w p-b-20">
 						<!--  'product_detail' single_variant.product.slug variant.slug  -->
-						<a href="{% url 'product_details' variant.product.slug  variant.slug %}" class="dis-block wrap-pic-w w-size22 m-r-20 trans-0-4 hov4">
+						<a href="{{variant.get_url}}" class="dis-block wrap-pic-w w-size22 m-r-20 trans-0-4 hov4">
 							<img src="{{variant.image1.url}}" alt="variant">
 						</a>
 						<!-- <p>

@@ -164,7 +164,8 @@ DEFAULT_FILE_STORAGE = 'thedoo.media_storages.MediaStorage'
 MEDIA_URL ='/media/'
 
 
-
+# if os.getcwd() == '/app':
+#     DEBUG = False
 
 # MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
