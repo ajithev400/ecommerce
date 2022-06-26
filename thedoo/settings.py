@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','thedoo-cart.herokuapp.com','*']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','thedoo-cart.herokuapp.com','thedoo.ml','3.84.17.137']
 
 
 # Application definition
